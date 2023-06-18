@@ -1,0 +1,23 @@
+
+
+
+
+% cbrewer 사용 예시
+
+PcrRange = [950 1010];      % caxis for pcolor
+ClbTicks = [950:10:1010];      % Colorbar ticks
+ClrPart = [950:2.5:1010];    % Color Partitioning
+CtrRange = [950:10:1010];    % Contour line
+
+    m_contourf(xlong',xlat',V2,ClrPart);
+    Cmap = cbrewer('div','RdYlBu',length(ClrPart)-1,'pchip');
+    colormap(flipud(Cmap))
+    caxis(PcrRange)
+
+
+cbrewer('a','b','c','pchip')
+ a : Diverging --> div
+     Sequential --> seq
+     Qualitative --> qual or qul 
+ b : Diverging, Sequential, Qualitative 의 세목을 적어줌
+ c : colorbar의 길이/ 범위정해줌

@@ -1,0 +1,46 @@
+function han = roms_addvect_scale_bj(pos,uv,uscale,label,varargin)
+%  han = roms_addvect_scale(pos,uv,uscale,label,varargin)
+%
+%  pos = [x y] position for scale vector (can use, e.g. ginput(1)
+%  uv = [u v] scale vector
+%  uscale = same scale as used in the roms_quiver command
+%  label = string to label vector, default is 'm/s'
+%  varargin = arguments to quiver, e.g. vector color
+%
+% John Wilkin
+  
+% add a scale vector to the plot
+
+% get plot state
+nextplotstatewas = get(gca,'nextplot');
+
+% hold whatever is already plotted
+set(gca,'nextplot','add')
+
+hq = quiver(pos(1),pos(2)-0.2,uscale*uv(1),uscale*uv(2),0,varargin{:});
+
+if nargin < 4
+  label = 'm/s';
+end
+if isempty(label)
+  label = 'm/s';
+end
+
+% interactive text placement
+% ht = gtext([num2str(uscale) ' m/s']);
+
+umag = abs(uv(1)+sqrt(-1)*uv(2));
+ht = text(pos(1),pos(2),[num2str(umag) ' ' label ' ']);
+%set(ht,'horizontalalignment','right')  % original setting
+set(ht,'horizontalalignment','center')
+
+if nargout > 0
+  han = [hq];
+  if exist('ht')==1
+    han = [han; ht];
+  end
+end
+
+% restore nextplotstate to what it was
+set(gca,'nextplot',nextplotstatewas);
+

@@ -1,0 +1,141 @@
+function han = roms_quiver(x_rho,y_rho,u,v,angle,d,uscale,varargin)
+% Makes a quiver plot of u,v data on the ROMS C-grid
+%  han = roms_quiver(x_rho,y_rho,u,v,angle,d,uscale,varargin)
+%
+% or
+%  han = roms_quiver(lon_rho,lat_rho,u,v,angle,d,uscale,varargin)
+%  han = roms_quiver(grd.lon_rho,grd.lat_rho,u,v,grd.angle,d,uscale,varargin)
+%
+% The vectors are averaged and plotted at the psi points grid
+%
+% Inputs:
+%
+% x_rho,y_rho    coordinates of the rho points
+% u,v              velocity components on their own corners of the 
+%                  staggered C-grid
+% angle          (radians) the angle between the x-axis and east
+%                  (angle is in the grd_file, or you can use [] if there 
+%                  is no rotation)
+%
+% WARNING: THE ANGLE RECORDED IN SOME ROMS GRID FILES MAY BE IN DEGREES
+% THIS FUNCTION ASSUMES RADIANS
+% 
+% Optional inputs:
+%
+% d              causes the vectors to be decimated (if a scalar, both 
+%                  dimensions are decimated by this factor, if a vector [nx ny]
+%                  then each direction is decimated accordingly
+% uscale         scale factor for vectors
+%                  quiver is called with quiver(x,y,uscale*u,uscale*v,0,...)
+%                    see help quiver for an explanation
+% varargin       any list of valid quiver linetype/style options
+%
+% John Wilkin
+
+% get plot state
+nextplotstatewas = get(gca,'nextplot');
+
+% hold whatever is already plotted
+set(gca,'nextplot','add')
+
+if length(size(u))>2
+  % to handle singleton dimensions inherited from the time or vertical slicing
+  u = squeeze(u);
+  v = squeeze(v);
+end
+
+if nargin < 5
+  angle = zeros(size(x_rho));
+end
+if isempty(angle)
+  angle = zeros(size(x_rho));
+end
+
+if max(abs(angle(:)))>2*pi
+    warning('there are angles greater than 2*pi')
+end
+
+% average to psi points
+u = av2(u);
+v = av2(v')';
+x = av2(av2(x_rho')');
+y = av2(av2(y_rho')');
+angle = av2(av2(angle')');
+
+% decimate the vectors
+if nargin < 6
+  d = 1;
+end
+if isempty(d)
+  d = 1;
+end
+if d ~= 1
+  dx = d;
+  if length(d) == 1
+    dy = d;
+  end
+  sx = 1:dx:size(x,1);
+  sy = 1:dy:size(x,2);
+  x = x(sx,sy);
+  y = y(sx,sy);
+  u = u(sx,sy);
+  v = v(sx,sy);
+  angle = angle(sx,sy);
+end
+
+% rotate coordinates if required
+
+%uveitheta = (u+sqrt(-1)*v).*exp(sqrt(-1)*pi/180*angle);
+uveitheta = (u+sqrt(-1)*v).*exp(sqrt(-1)*angle);
+u = real(uveitheta);
+v = imag(uveitheta);
+
+% clip the zeros and NaNs (this eliminates zero-length vectors (dots) from
+% the quiver plot
+if 1
+  % keep = find(isnan(u)~=1&u~=0&isnan(v)~=1&v~=0);
+  keep = find(isnan(u)~=1 & u~=0 & isnan(v)~=1 & v~=0 ...
+      & isnan(x)~=1 & isnan(y)~=1);
+  x = x(keep);
+  y = y(keep);
+  u = u(keep);
+  v = v(keep);
+end
+
+% flag the vectors outside the axes to avoid the dots at the vector
+% origin that occur with some X displays
+if 1
+  ax = axis;
+%   clip = findoutrange([x y],ax);
+%   x(clip) = NaN;
+end
+
+h = quiver(x,y,uscale*squeeze(u),uscale*squeeze(v),0,varargin{:});
+
+% restore nextplotstate to what it was
+set(gca,'nextplot',nextplotstatewas);
+
+if nargout > 0
+   han = h;
+end
+
+function a = av2(a)
+%AV2	grid average function.  
+%       If A is a vector [a(1) a(2) ... a(n)], then AV2(A) returns a 
+%	vector of averaged values:
+%	[ ... 0.5(a(i+1)+a(i)) ... ]  
+%
+%       If A is a matrix, the averages are calculated down each column:
+%	AV2(A) = 0.5*(A(2:m,:) + A(1:m-1,:))
+%
+%	TMPX = AV2(A)   will be the averaged A in the column direction
+%	TMPY = AV2(A')' will be the averaged A in the row direction
+%
+%	John Wilkin 21/12/93
+
+[m,n] = size(a);
+if m == 1
+	a = 0.5 * (a(2:n) + a(1:n-1));
+else
+	a = 0.5 * (a(2:m,:) + a(1:m-1,:));
+end
