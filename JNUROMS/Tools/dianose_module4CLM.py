@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 15 14:50:12 2023
+Created on Thu Jun  1 10:35:58 2023
 
 @author: shjo9
 """
@@ -11,7 +11,7 @@ import datetime as dt
 import cmocean
 import sys 
 sys.path.append('D:/JNUpack/')
-sys.path.append('D:/JNUpack/JNUROMS')
+sys.path.append('D:/JNUpack/JNUROMS/')
 import Tools.JNUROMS as jr
 import Tools.Inputs as ti
 # from Mapping.Tools import d_modules as mm
@@ -26,19 +26,25 @@ from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas as pd
 from scipy.interpolate import interp2d, griddata
-from pptx import Presentation # 라이브러리 
-from pptx.util import Inches,Cm, Pt # 사진, 표등을 그리기 위해
-from pptx.enum.text import PP_ALIGN
+# from pptx import Presentation # 라이브러리 
+# from pptx.util import Inches,Cm, Pt # 사진, 표등을 그리기 위해
+# from pptx.enum.text import PP_ALIGN
 import cartopy
 import matplotlib.path as mpath
 
-Avg_pth='G:/Models/TK0525EM_CLM/Outputs/Avg/'
-Log_npth='G:/Models/C_Log_V205701_XSICE.txt'
-save_pth='D:/OneDrive/base142/Warehouse02/TK0525EM_CLM/'
+#Avg_pth ='/home/jejunu/JNU_shjo/_data/base201/Cases_A/Q0701/Outputs/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/Q0701/LOGS/LOG_Q0701.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Q0701/'
 
-# Avg_pth='G:/Models/V205701_MW/Avg/'
-# Log_npth='G:/Models/V205701_MW/Log_V205701_MW.txt'
-# save_pth='D:/OneDrive/base142/Warehouse02/V205701_MW/'
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/Outputs_srfd/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/LOGS/Log_V205701_M_XSICE_srfd.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/V205701_M_XSICE_SRFD/'
+
+Avg_pth='G:/Models/Cases_CLM/'
+Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/TEST/LOGS/Log_TEST_01.txt'
+save_pth='D:/tmp/'
+
+
 
 # Avg_pth='G:/Models/V205701_MW_400vic/Avg/'
 # Log_npth='G:/Models/V205701_MW_400vic/Log_V205701_MW_400VIC.txt'
@@ -48,20 +54,22 @@ save_pth='D:/OneDrive/base142/Warehouse02/TK0525EM_CLM/'
 # Log_npth='G:/Models/V205701_MW_XICE/Log_V205701_MW_XICE.txt'
 # save_pth='D:/OneDrive/base142/Warehouse02/V205701_MW_XICE/'
 
+#Grd_npth='/home/jejunu/JNU_shjo/_data/base201/Warehouse01/GRD/Grd_Q0_Rtopo30S_Smooth_sponge.nc'
 Grd_npth='G:/MODEL_DATA/Grd/Grd_SO_05d_sponge.nc'
-SODA_pth='G:/SODA/'
-fig_bool=0
+SODA_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse01/SODA/'
 
-print('!!! Location Configureation !!!')
-print('!!! Avg_path:',Avg_pth)
-print('!!! Log_npth:',Log_npth)
-print('!!! save_pth:',save_pth)
-print('!!! Grd_npth:',Grd_npth)
-print('!!! SODA_pth:',SODA_pth)
-print('!!! fig_bool:',fig_bool)
-Conf_bool=input('!!! Confirm location...? (default: y) : ')
-if Conf_bool:
-    raise
+fig_bool=1
+
+#print('!!! Location Configureation !!!')
+#print('!!! Avg_path:',Avg_pth)
+#print('!!! Log_npth:',Log_npth)
+#print('!!! save_pth:',save_pth)
+#print('!!! Grd_npth:',Grd_npth)
+#print('!!! SODA_pth:',SODA_pth)
+#print('!!! fig_bool:',fig_bool)
+#Conf_bool=input('!!! Confirm location...? (default: y) : ')
+#if Conf_bool:
+#    raise
 
 plt.rcParams["font.weight"] = "regular"
 plt.rcParams["axes.labelweight"] = "bold"
@@ -73,58 +81,6 @@ plt.rcParams['ytick.labelright'] = False
 plt.rcParams['ytick.labelleft'] = True
 plt.rcParams["font.family"] = 'Arial'
 mpl.rcParams['axes.unicode_minus'] = False
-
-def Plot_SO_Spherical3(lonA,latA,MyDATA,t_name,My_levels,CMAP,w_path,save_name,fig_bool=False):
-
-    Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
-    PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
-    MERC=ccrs.Mercator(central_longitude=180.0,globe=None)
-    
-    # Now we will create axes object having specific projection 
-
-    fig, ax = plt.subplots(1, 1, figsize=(12.5,11),
-                       subplot_kw={'projection': Spheric})
-    theta = np.linspace(0, 2*np.pi, 100)
-    center, radius = [0.5, 0.5], 0.5
-    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
-    circle = mpath.Path(verts * radius + center)
-    ax.set_boundary(circle, transform=ax.transAxes)
-    # To plot borders and coastlines, we can use cartopy feature
-    ax.add_feature(cf.COASTLINE.with_scale("110m"), lw=1,zorder=110)
-    ax.add_feature(cartopy.feature.LAND,color=[.75,.75,.75],zorder=100)
-    ax.set_title(t_name,loc='right',fontdict={'fontsize':32,'fontweight':'regular'})
-
-    gl = ax.gridlines(crs=PC, draw_labels=True,y_inline=False,x_inline=False,
-                      linewidth=.6, color='k', alpha=0.45, linestyle='-.',\
-                          )
-    gl.rotate_labels=False
-    gl.xlabels_top,gl.ylabels_right = True,True
-    gl.xlabel_style = gl.ylabel_style = {"size" : 26}
-     
-    #M=plt.contourf(lonA,latA,MyDATA,cmap=CMAP,levels=My_levels,transform=PC)
-    M=plt.pcolormesh(lonA, latA, MyDATA,
-                  transform=PC,cmap=CMAP)
-    #plt.clim(Mylim[0],Mylim[-1])
-    
-    # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
-    # ax.set_extent([0, 360, -80, -24], crs=PC)
-    
-    ax.tick_params(axis='both', which='major', labelsize=28)
-
-    divider = make_axes_locatable(ax)
-    ax_cb = divider.new_horizontal(size="5%", pad=1., axes_class=plt.Axes)
-
-    fig.add_axes(ax_cb)
-    cb=plt.colorbar(M,extend='both',pad=0.08,cax=ax_cb)
-    cb.set_label(label='', weight='regular',fontsize=28)
-    cb.ax.tick_params(labelsize=19)
-
-    plt.tight_layout()
-    if fig_bool:
-        plt.savefig(w_path+'/ppt/'+save_name,
-                facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
-        plt.savefig(w_path+'/'+save_name)
-    plt.show()
 
 def Plot_SO_Spherical2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_name,fig_bool=False):
 
@@ -159,7 +115,7 @@ def Plot_SO_Spherical2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_
     plt.clim(Mylim[0],Mylim[-1])
     
     # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
-    ax.set_extent([0, 360, -80, -24], crs=PC)
+#    ax.set_extent([0, 360, -80, -24], crs=PC)
     
     ax.tick_params(axis='both', which='major', labelsize=28)
 
@@ -178,6 +134,58 @@ def Plot_SO_Spherical2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_
         plt.savefig(w_path+'/'+save_name)
     plt.show()
 
+def Plot_SO_Spherical3(lonA,latA,MyDATA,t_name,CMAP,my_lim,w_path,save_name,fig_bool=False):
+
+    Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
+    PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
+    MERC=ccrs.Mercator(central_longitude=180.0,globe=None)
+    
+    # Now we will create axes object having specific projection 
+
+    fig, ax = plt.subplots(1, 1, figsize=(12.5,11),
+                       subplot_kw={'projection': Spheric})
+    theta = np.linspace(0, 2*np.pi, 100)
+    center, radius = [0.5, 0.5], 0.5
+    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+    circle = mpath.Path(verts * radius + center)
+    ax.set_boundary(circle, transform=ax.transAxes)
+    # To plot borders and coastlines, we can use cartopy feature
+    ax.add_feature(cf.COASTLINE.with_scale("110m"), lw=1,zorder=110)
+    ax.add_feature(cartopy.feature.LAND,color=[.75,.75,.75],zorder=100)
+    ax.set_title(t_name,loc='right',fontdict={'fontsize':32,'fontweight':'regular'})
+
+    gl = ax.gridlines(crs=PC, draw_labels=True,y_inline=False,x_inline=False,
+                      linewidth=.6, color='k', alpha=0.45, linestyle='-.',\
+                          )
+    gl.rotate_labels=False
+    gl.xlabels_top,gl.ylabels_right = True,True
+    gl.xlabel_style = gl.ylabel_style = {"size" : 26}
+     
+    #M=plt.contourf(lonA,latA,MyDATA,cmap=CMAP,levels=My_levels,transform=PC)
+    M=plt.pcolormesh(lonA, latA, MyDATA,
+                  transform=PC,cmap=CMAP,vmin=my_lim[0],vmax=my_lim[-1])
+    #plt.clim(Mylim[0],Mylim[-1])
+    
+    # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
+    ax.set_extent([0, 360, -80, -24], crs=PC)
+    
+    ax.tick_params(axis='both', which='major', labelsize=28)
+
+    divider = make_axes_locatable(ax)
+    ax_cb = divider.new_horizontal(size="5%", pad=1., axes_class=plt.Axes)
+
+    fig.add_axes(ax_cb)
+    cb=plt.colorbar(M,extend='both',pad=0.08,cax=ax_cb)
+    cb.set_label(label='', weight='regular',fontsize=28)
+    cb.ax.tick_params(labelsize=19)
+
+    plt.tight_layout()
+    if fig_bool:
+        plt.savefig(w_path+'/ppt/'+save_name,
+                facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+        plt.savefig(w_path+'/'+save_name)
+    plt.show()
+    
 def Plot_SO_Merc2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_name,fig_bool=False):
 
     Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
@@ -206,7 +214,7 @@ def Plot_SO_Merc2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_name,
     plt.clim(Mylim[0],Mylim[-1])
     
     # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
-    ax.set_extent([0, 360, -80, -24], crs=PC)
+ #   ax.set_extent([0, 360, -80, -24], crs=PC)
     ax.tick_params(axis='both', which='major', labelsize=28)
 
     divider = make_axes_locatable(ax)
@@ -223,6 +231,7 @@ def Plot_SO_Merc2(lonA,latA,MyDATA,t_name,My_levels,CMAP,Mylim,w_path,save_name,
                 facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
         plt.savefig(w_path+'/'+save_name)
     plt.show()
+    
     
 def check_inputs(): #Log_npth,Avg_pth,save_pth
 
@@ -475,7 +484,7 @@ def Stability01():
                 PD = pd.DataFrame({},columns=header_name)
                 stid=i
             tmp1=Model_Log[i].lstrip()
-            if i>stid and len(tmp1) and tmp1[0].isnumeric() and not i>len(Model_Log)-600:
+            if i>stid and len(tmp1) and tmp1[0].isnumeric() and not i>len(Model_Log)-300:
                 A= [ii.strip() for ii in tmp1.split(' ') if len(ii)]
                 [A.append(ii.strip()) for ii in Model_Log[i+1].lstrip().split(' ') if len(ii)]
                 PD.loc[j] = A
@@ -490,8 +499,8 @@ def Stability01():
     
     PD,rx=get_model_stability(Model_Log)
     
-    PD['NET_VOLUME'].plot()
-    PD.columns
+    # PD['NET_VOLUME'].plot()
+    # PD.columns
     
     RX=rx.split('\n')
     RX1=RX[0][:16]
@@ -500,7 +509,7 @@ def Stability01():
     Title_name='Topo ('+RX1+' / '+RX2+')'
     Model_Times1 = PD['YYYY-MM-DD']
     Model_Times2 = [i[2:4] for i in Model_Times1]
-    Label_size = 25
+    Label_size = 18
     
     fig, axs = plt.subplots(4,1,figsize=(11,8.5),constrained_layout = True,
                         sharex=True,gridspec_kw={'height_ratios': [1,1, 1.,1]},dpi=200)
@@ -517,7 +526,7 @@ def Stability01():
     #                 Zeta2d.data.mean()+Zeta2d.data.std()*7)# axs[0].set_yticks(ticks=np.arange(18,23,1))
     axs[0].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
     axs[0].tick_params(axis='y', direction='in', length=6, pad=8, labelsize=Label_size-3, width=1., color='k')
-    axs[0].legend(fontsize=18)
+    axs[0].legend(fontsize=12)
     #! Fig2 
     f1 = axs[1].plot(Model_Times1,PD['POTEN_ENRG'], label='POTEN_ENRG',color='k',linewidth=2,zorder=0)
     # axs[1].plot(np.array(Model_Times1)[t_co],f1_m2(tmp_t),color='r',linewidth=3,linestyle='dashed')
@@ -531,13 +540,13 @@ def Stability01():
     #                 Momentum2d.data.mean()+Momentum2d.data.std()*3.)
     # axs[1].set_yticks(ticks=np.arange(18,23,1))
     axs[1].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
-    axs[1].legend(fontsize=18,loc=4)
+    axs[1].legend(fontsize=12)
     
     f1 = axs[2].plot(Model_Times1,PD['TOTAL_ENRG'], label='TOTAL_ENRG',color='k',linewidth=2,zorder=0)
     # axs[2].plot(np.array(Model_Times1)[t_co],f1_m3(tmp_t),color='r',linewidth=3,linestyle='dashed')
     axs[2].tick_params(axis='y', labelsize=Label_size)
-    xtick_location = Model_Times1[5::12]
-    xtick_labels =Model_Times2[5::12]
+    xtick_location = Model_Times1[5::12*40]
+    xtick_labels =Model_Times2[5::12*40]
     axs[2].set_xticks(ticks=xtick_location)
     axs[2].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
     # axs[2].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
@@ -545,13 +554,13 @@ def Stability01():
     #                 Momentum3d.data.mean()+Momentum3d.data.std()*3.)
     # axs[1].set_yticks(ticks=np.arange(18,23,1))
     axs[2].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
-    axs[2].legend(fontsize=18,loc=4)
+    axs[2].legend(fontsize=12)
     
     f1 = axs[3].plot(Model_Times1,PD['NET_VOLUME'], label='NET_VOLUME',color='k',linewidth=2,zorder=0)
     # axs[2].plot(np.array(Model_Times1)[t_co],f1_m3(tmp_t),color='r',linewidth=3,linestyle='dashed')
     axs[3].tick_params(axis='y', labelsize=Label_size)
-    xtick_location = Model_Times1[5::12*10]
-    xtick_labels =Model_Times2[5::12*10]
+    xtick_location = Model_Times1[5::12*60]
+    xtick_labels =Model_Times2[5::12*60]
     axs[3].set_xticks(ticks=xtick_location)
     axs[3].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
     # axs[2].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
@@ -559,7 +568,7 @@ def Stability01():
     #                 Momentum3d.data.mean()+Momentum3d.data.std()*3.)
     # axs[1].set_yticks(ticks=np.arange(18,23,1))
     axs[3].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
-    axs[3].legend(fontsize=18,loc=4)
+    axs[3].legend(fontsize=12)
 
     plt.tight_layout()
     if fig_bool:
@@ -570,7 +579,7 @@ def Stability01():
 def Stability02():
     global Avg_pth, Log_npth, save_pth,fig_bool
 
-    ncs=[Avg_pth+i for i in os.listdir(Avg_pth)]
+    ncs=[Avg_pth+i for i in os.listdir(Avg_pth) if i.endswith('.nc')]
 
     SampleNC=Dataset(ncs[0])
     
@@ -591,7 +600,7 @@ def Stability02():
     Total_size=np.sum(CELL_size)
 
     ZETA_timeseries=np.sum(ZETA_area,axis=2).sum(axis=1)/Total_size
-        
+    
     # AICE
     AICE=MFDataset(ncs)['aice']
     AICE_values=AICE[:]
@@ -605,8 +614,8 @@ def Stability02():
     
     t=np.arange(len(AICE_timeseries))
     
-    AICE_fp1=np.polyfit(t[200:],AICE_timeseries[200:],1)
-    AICE_trend=np.polyval(AICE_fp1,t[200:])
+    #AICE_fp1=np.polyfit(t[200:],AICE_timeseries[200:],1)
+    #AICE_trend=np.polyval(AICE_fp1,t[200:])
     
     # SHFLUX 
     SHFLUX=MFDataset(ncs)['shflux']
@@ -622,11 +631,11 @@ def Stability02():
     
     t=range(len(SHFLUX_timeseries))
     
-    SHFLUX_fp1=np.polyfit(t,SHFLUX_timeseries,1)
-    SHFLUX_trend=np.polyval(SHFLUX_fp1,t)
+    #SHFLUX_fp1=np.polyfit(t,SHFLUX_timeseries,1)
+    #SHFLUX_trend=np.polyval(SHFLUX_fp1,t)
     
-    plt.plot(SHFLUX_timeseries)
-    plt.plot(SHFLUX_trend)
+    #plt.plot(SHFLUX_timeseries)
+    #plt.plot(SHFLUX_trend)
     
     # SST
     SST=MFDataset(ncs)['temp'][:,-1,:,:]
@@ -641,8 +650,8 @@ def Stability02():
     
     t=range(len(SST_timeseries))
     
-    SST_fp1=np.polyfit(t,SST_timeseries,1)
-    SST_trend=np.polyval(SST_fp1,t)
+    #SST_fp1=np.polyfit(t,SST_timeseries,1)
+    #SST_trend=np.polyval(SST_fp1,t)
     
     
     Model_Times1 = t
@@ -770,10 +779,14 @@ def data_drift(data_nm,lat_rng,My_levels,cmap,data_lim,**kargs):
         pass
             
     for i in data:
-        if kargs['mean']=='monthly':
-            t_name=pd.to_datetime(i.ocean_time.values).strftime('%Y-%m')
-        else:
-            t_name=str(i.ocean_time.values)
+        # if kargs['mean']=='monthly':
+
+        #     t_name=pd.to_datetime(i.ocean_time.values).strftime('%Y-%m')
+        # else:
+        #     t_name=str(i.ocean_time.values)
+        t_name=str(i.ocean_time.values)[:7]
+            
+            
         s_name_S='Spherical_'+data_nm+'_'+t_name.replace('-','')+'_'+\
                 kargs['st'].replace('-','')+'_'+kargs['ed'].replace('-','')
         
@@ -784,12 +797,12 @@ def data_drift(data_nm,lat_rng,My_levels,cmap,data_lim,**kargs):
                               save_pth+'Surface_mean_'+kargs['mean']+'_'+data_nm\
                               ,s_name_S,fig_bool)
             
-        Plot_SO_Merc2(lon_rho,lat_rho,i,t_name,My_levels,cmap,data_lim,\
-                          save_pth+'Surface_mean_'+kargs['mean']+'_'+data_nm\
-                          ,s_name_M,fig_bool)
+#        Plot_SO_Merc2(lon_rho,lat_rho,i,t_name,My_levels,cmap,data_lim,\
+#                          save_pth+'Surface_mean_'+kargs['mean']+'_'+data_nm\
+#                          ,s_name_M,fig_bool)
             
 # Auger Temp vertical section
-def Auger_temp_section(data_nm,My_levels,cmap,**kargs):
+def Auger_temp_section(data_nm,My_levels,cmap,has_year_zero=False,**kargs):
     global Avg_pth,Grd_npth, save_pth,fig_bool
     
     plt.rcParams['contour.negative_linestyle'] = 'solid'
@@ -803,13 +816,24 @@ def Auger_temp_section(data_nm,My_levels,cmap,**kargs):
     t_rng=[kargs['st'],kargs['ed']]
     OGCM_TIMES=MFDataset(Avg_pth+'*nc')['ocean_time']
     units=OGCM_TIMES.units
-    print(11)
-    OGCM_times=num2date(OGCM_TIMES[:],units)
-    Tst=dt.datetime(int(t_rng[0].split('-')[0]), int(t_rng[0].split('-')[1]),1)
-    Ted=dt.datetime(int(t_rng[1].split('-')[0]), int(t_rng[1].split('-')[1]),31)
-    TIMES_co=np.where( (OGCM_times>=Tst)&(OGCM_times<=Ted) )[0]
+
+
+    if has_year_zero:
+        OGCM_times=num2date(OGCM_TIMES[:],units,has_year_zero=has_year_zero)
+        Tst=dt.datetime(int(t_rng[0].split('-')[0]), int(t_rng[0].split('-')[1]),1)
+        Ted=dt.datetime(int(t_rng[1].split('-')[0]), int(t_rng[1].split('-')[1]),31)
+        OGCM_times= np.array([dt.datetime(int(i.strftime().split(' ')[0].split('-')[0]),\
+                     int(i.strftime().split(' ')[0].split('-')[1]),\
+                         int(i.strftime().split(' ')[0].split('-')[-1])) for i in OGCM_times])
+        TIMES_co=np.where( (OGCM_times>=Tst)&(OGCM_times<=Ted) )[0]
+
+    else:
+        OGCM_times=num2date(OGCM_TIMES[:],units,has_year_zero=has_year_zero)
+        Tst=dt.datetime(int(t_rng[0].split('-')[0]), int(t_rng[0].split('-')[1]),1)
+        Ted=dt.datetime(int(t_rng[1].split('-')[0]), int(t_rng[1].split('-')[1]),31)
+        TIMES_co=np.where( (OGCM_times>=Tst)&(OGCM_times<=Ted) )[0]
+
     Avg_co=list(set(TIMES_co//12))
-    print(22)
 
     My_date=list(np.sort(list(set([i.strftime('%Y') for i in OGCM_times[TIMES_co]]))))
     
@@ -975,16 +999,16 @@ def zonal_data_drift(data_nm,cmap,data_lim,**kargs):
                                 sharex=True,gridspec_kw={'height_ratios': [1, 1.3],'wspace':0, 'hspace':0.05},dpi=200)
         # fig.subplots_adjust(wspace=0, hspace=0)
         axs[0].set_title(t_name,loc='right',fontdict={'fontsize':Label_size,'fontweight':'regular'})
-        im0=axs[0].contour(lat_m,Z,i,colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
-        axs[0].clabel(im0, inline=1, fontsize=14)
-        im0.collections[1].set_linestyle('dashed')
+      #  im0=axs[0].contour(lat_m,Z,i,colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
+      #  axs[0].clabel(im0, inline=1, fontsize=14)
+      #  im0.collections[1].set_linestyle('dashed')
         im1=axs[0].pcolor(lat_m,Z,i,cmap=cmap,vmin=data_lim[0],vmax=data_lim[-1])
         axs[0].tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
         axs[0].tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size, color='k',right=True)
         axs[0].set_ylim(-NC['Tcline'].values[0],0)
         axs[0].set_xlim(-80,-23.5)
-        im3=axs[1].contour(lat_m,Z,i,vmin=data_lim[0],vmax=data_lim[-1],colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
-        axs[1].clabel(im0, inline=1, fontsize=14)
+      #  im3=axs[1].contour(lat_m,Z,i,vmin=data_lim[0],vmax=data_lim[-1],colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
+    #    axs[1].clabel(im0, inline=1, fontsize=14)
         axs[0].set_xticks(ticks=xtick_location)
         axs[0].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
         axs[0].set_facecolor(color='#dddddd')
@@ -1148,7 +1172,7 @@ def zonal_data_diff_Soda(data_nm,cmap,cmap1,data_lim,data_lim1,**kargs):
         axs[0].set_xticks(ticks=xtick_location)
         axs[0].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
         axs[0].set_facecolor(color='#dddddd')
-
+        
         # im4=axs[1].clabel(colors='k',CS=im3,inline=True,fmt='%1.f')
         im2=axs[1].pcolor(lat_m,Z,model_soda,cmap=cmap1,vmin=data_lim1[0],vmax=data_lim1[-1])
         axs[1].tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
@@ -1158,7 +1182,6 @@ def zonal_data_diff_Soda(data_nm,cmap,cmap1,data_lim,data_lim1,**kargs):
         axs[1].set_xticks(ticks=xtick_location)
         axs[1].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
         axs[1].set_facecolor(color='#dddddd')
-
         divider = make_axes_locatable(axs[1])
         cax = divider.append_axes("bottom", size="7%", pad=.35)
         cax.tick_params(labelsize=Label_size)
@@ -1398,7 +1421,6 @@ def Surface_data_trend(data_nm,lat_rng,cmap,**kargs):
     #                   save_pth+'Surface_mean_'+kargs['mean']+'_'+data_nm\
     #                   ,s_name_M,fig_bool)
 
-# Zonal Linear trend
 def zonal_data_trend(data_nm,lat_rng,cmap,**kargs):
     global Avg_pth,Grd_npth, save_pth, fig_bool
 
@@ -1484,9 +1506,6 @@ def zonal_data_trend(data_nm,lat_rng,cmap,**kargs):
         print(save_pth+s_name_S+'/'+s_name_S)
         plt.savefig(save_pth+s_name_S+'/'+s_name_S,bbox_inches='tight')
     plt.show()
-
-
-
 
 
 

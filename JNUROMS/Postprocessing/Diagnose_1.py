@@ -5,13 +5,13 @@ Created on Mon May 15 11:08:42 2023
 @author: shjo9
 """
 
-# Module import
+# # Module import
 
-import matplotlib
-matplotlib.use('Agg') #Generates figures in Backend
+# import matplotlib
+# matplotlib.use('Agg') #Generates figures in Backend
 import sys
-sys.path.append('D:/OneDrive/JNUpack/JNUROMS/')
-from Tools.dianose_module import *
+sys.path.append('D:/JNUpack/JNUROMS/')
+from Tools.dianose_module4CLM import *
 from netCDF4 import Dataset, num2date, date2num
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 import cmocean 
@@ -75,107 +75,109 @@ u_diff_levels=np.arange(u_diff_lim[0],u_diff_lim[-1]+0.1/2,0.1)
 uv_diff_CMAP = ListedColormap(cmocean.cm.balance(np.linspace(0, 1, len(u_diff_levels)+1,endpoint=True)))
 
 
+CMAP_LT=CMAP=plt.get_cmap('seismic',15)
+
 # data_drift('u_eastward',[-80,-24],u_levels,uv_CMAP,u_lim,\
 #             mean='ann',st='2016-01',ed='2016-12')
 # Surface_data_Soda_diff('u_eastward',[-80,-24],uv_CMAP,uv_diff_CMAP,u_levels,\
 #                         u_diff_levels,u_lim,u_diff_lim,mean='monthly',st='2016-03',ed='2016-12')
 
-''' My ppt '''
-check_inputs()
+# ''' My ppt '''
+# check_inputs()
 
-''' Stability check 1,2 '''
-Stability01()
-Stability02() # Temp trand, aice trend
+# ''' Stability check 1,2 '''
+# Stability01()
+# Stability02() # Temp trand, aice trend
 
-''' Horizontal mean of Surface layer data '''
-data_drift('zeta',[-80,-24],zeta_levels,zeta_CMAP,zeta_lim,\
-            mean='ann',st='1980-02',ed='2016-12')
-data_drift('zeta',[-80,-24],zeta_levels,zeta_CMAP,zeta_lim,\
-            mean='monthly_clm',st='2000-01',ed='2016-12')
+# ''' Horizontal mean of Surface layer data '''
+# data_drift('zeta',[-80,-24],zeta_levels,zeta_CMAP,zeta_lim,\
+#             mean='ann',st='0001-01',ed='0001-12')
+# data_drift('zeta',[-80,-24],zeta_levels,zeta_CMAP,zeta_lim,\
+#             mean='monthly_clm',st='2000-01',ed='2016-12')
     
-data_drift('u_eastward',[-80,-24],u_levels,uv_CMAP,u_lim,\
-            mean='ann',st='1980-02',ed='2016-12')
-data_drift('u_eastward',[-80,-24],u_levels,uv_CMAP,u_lim,\
-            mean='monthly_clm',st='2000-01',ed='2016-12')
+# data_drift('u_eastward',[-80,-24],u_levels,uv_CMAP,u_lim,\
+#             mean='ann',st='1980-02',ed='2016-12')
+# data_drift('u_eastward',[-80,-24],u_levels,uv_CMAP,u_lim,\
+#             mean='monthly_clm',st='2000-01',ed='2016-12')
 
-data_drift('temp',[-80,-24],temp_levels,temp_CMAP,temp_lim,\
-            mean='ann',st='1980-02',ed='2016-12')
-data_drift('temp',[-80,-24],temp_levels,temp_CMAP,temp_lim,\
-            mean='monthly_clm',st='2000-01',ed='2016-12')
+# data_drift('temp',[-80,-24],temp_levels,temp_CMAP,temp_lim,\
+#             mean='ann',st='1980-02',ed='2016-12')
+# data_drift('temp',[-80,-24],temp_levels,temp_CMAP,temp_lim,\
+#             mean='monthly_clm',st='2000-01',ed='2016-12')
 
-data_drift('salt',[-80,-24],salt_levels,salt_CMAP,salt_lim,\
-            mean='ann',st='1980-02',ed='2016-12')
-data_drift('salt',[-80,-24],salt_levels,salt_CMAP,salt_lim,\
-            mean='monthly_clm',st='2000-01',ed='2016-12')
+# data_drift('salt',[-80,-24],salt_levels,salt_CMAP,salt_lim,\
+#             mean='ann',st='1980-02',ed='2016-12')
+# data_drift('salt',[-80,-24],salt_levels,salt_CMAP,salt_lim,\
+#             mean='monthly_clm',st='2000-01',ed='2016-12')
     
-data_drift('aice',[-80,-24],aice_levels,aice_CMAP,aice_lim,\
-            mean='ann',st='1980-01',ed='2016-12')
-data_drift('aice',[-80,-24],aice_levels,aice_CMAP,aice_lim,\
-            mean='monthly_clm',st='2000-01',ed='2016-12')
+# data_drift('aice',[-80,-24],aice_levels,aice_CMAP,aice_lim,\
+#             mean='ann',st='1980-01',ed='2016-12')
+# data_drift('aice',[-80,-24],aice_levels,aice_CMAP,aice_lim,\
+#             mean='monthly_clm',st='2000-01',ed='2016-12')
 
-Surface_data_Soda_diff('zeta',[-80,-24],zeta_CMAP,zeta_diff_CMAP,zeta_levels,\
-                        zeta_diff_levels,zeta_lim,zeta_diff_lim,mean='ann',st='1980-02',ed='2016-12')
-Surface_data_Soda_diff('zeta',[-80,-24],zeta_CMAP,zeta_diff_CMAP,zeta_levels,\
-                        zeta_diff_levels,zeta_lim,zeta_diff_lim,mean='monthly_clm'\
-                            ,st='2000-01',ed='2016-12')
+# Surface_data_Soda_diff('zeta',[-80,-24],zeta_CMAP,zeta_diff_CMAP,zeta_levels,\
+#                         zeta_diff_levels,zeta_lim,zeta_diff_lim,mean='ann',st='1980-02',ed='2016-12')
+# Surface_data_Soda_diff('zeta',[-80,-24],zeta_CMAP,zeta_diff_CMAP,zeta_levels,\
+#                         zeta_diff_levels,zeta_lim,zeta_diff_lim,mean='monthly_clm'\
+#                             ,st='2000-01',ed='2016-12')
     
-Surface_data_Soda_diff('temp',[-80,-24],temp_CMAP,temp_CMAP,temp_levels,\
-                        temp_diff_levels,temp_lim,temp_diff_lim,mean='ann',st='1980-02',ed='2016-12')
-Surface_data_Soda_diff('temp',[-80,-24],temp_CMAP,temp_CMAP,temp_levels,\
-                        temp_diff_levels,temp_lim,temp_diff_lim,mean='monthly_clm'\
-                            ,st='2000-01',ed='2016-12')
+# Surface_data_Soda_diff('temp',[-80,-24],temp_CMAP,temp_CMAP,temp_levels,\
+#                         temp_diff_levels,temp_lim,temp_diff_lim,mean='ann',st='1980-02',ed='2016-12')
+# Surface_data_Soda_diff('temp',[-80,-24],temp_CMAP,temp_CMAP,temp_levels,\
+#                         temp_diff_levels,temp_lim,temp_diff_lim,mean='monthly_clm'\
+#                             ,st='2000-01',ed='2016-12')
     
-Surface_data_Soda_diff('salt',[-80,-24],salt_CMAP,salt_diff_CMAP,salt_levels,\
-                        salt_diff_levels,salt_lim,salt_diff_lim,mean='ann',st='1980-02',ed='2016-12')
-Surface_data_Soda_diff('salt',[-80,-24],salt_CMAP,salt_diff_CMAP,salt_levels,\
-                        salt_diff_levels,salt_lim,salt_diff_lim,mean='monthly_clm'\
-                            ,st='2000-01',ed='2016-12')
+# Surface_data_Soda_diff('salt',[-80,-24],salt_CMAP,salt_diff_CMAP,salt_levels,\
+#                         salt_diff_levels,salt_lim,salt_diff_lim,mean='ann',st='1980-02',ed='2016-12')
+# Surface_data_Soda_diff('salt',[-80,-24],salt_CMAP,salt_diff_CMAP,salt_levels,\
+#                         salt_diff_levels,salt_lim,salt_diff_lim,mean='monthly_clm'\
+#                             ,st='2000-01',ed='2016-12')
     
-Surface_data_Soda_diff('u_eastward',[-80,-24],uv_CMAP,uv_diff_CMAP,u_levels,\
-                        u_diff_levels,u_lim,u_diff_lim,mean='ann',st='1980-02',ed='2016-12')
-Surface_data_Soda_diff('u_eastward',[-80,-24],uv_CMAP,uv_diff_CMAP,u_levels,\
-                        u_diff_levels,u_lim,u_diff_lim,mean='monthly_clm'\
-                            ,st='2000-01',ed='2016-12')
+# Surface_data_Soda_diff('u_eastward',[-80,-24],uv_CMAP,uv_diff_CMAP,u_levels,\
+#                         u_diff_levels,u_lim,u_diff_lim,mean='ann',st='1980-02',ed='2016-12')
+# Surface_data_Soda_diff('u_eastward',[-80,-24],uv_CMAP,uv_diff_CMAP,u_levels,\
+#                         u_diff_levels,u_lim,u_diff_lim,mean='monthly_clm'\
+#                             ,st='2000-01',ed='2016-12')
 
-''' Zonal mean of Subsurface salinity drift cross section '''
-zonal_data_drift('u_eastward',uv_CMAP,[-.1,.1],\
-                  mean='ann',st='1980-02',ed='2016-12')
-zonal_data_drift('u_eastward',uv_CMAP,[-.1,.1],mean='monthly_clm',\
-                  st='2000-01',ed='2016-02')   
+# ''' Zonal mean of Subsurface salinity drift cross section '''
+# zonal_data_drift('u_eastward',uv_CMAP,[-.1,.1],\
+#                   mean='ann',st='1980-02',ed='2016-12')
+# zonal_data_drift('u_eastward',uv_CMAP,[-.1,.1],mean='monthly_clm',\
+#                   st='2000-01',ed='2016-02')   
     
-zonal_data_drift('v_northward',uv_CMAP,[-.01,.01],\
-                  mean='ann',st='1980-02',ed='2016-12')
-zonal_data_drift('v_northward',uv_CMAP,[-.01,.01],mean='monthly_clm',\
-                  st='2000-01',ed='2016-02')   
-zonal_data_drift('temp',temp_CMAP,temp_lim,mean='season',\
-                 st='2000-01',ed='2016-12')
-zonal_data_drift('salt',salt_CMAP,salt_lim,mean='season',\
-                 st='2000-01',ed='2016-12')   
-zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
-                     mean='season',st='2000-01',ed='2016-12')
-zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
-                     mean='season',st='2000-01',ed='2016-12')   
+# zonal_data_drift('v_northward',uv_CMAP,[-.01,.01],\
+#                   mean='ann',st='1980-02',ed='2016-12')
+# zonal_data_drift('v_northward',uv_CMAP,[-.01,.01],mean='monthly_clm',\
+#                   st='2000-01',ed='2016-02')   
+# zonal_data_drift('temp',temp_CMAP,temp_lim,mean='season',\
+#                  st='0001-01',ed='0001-12')
+# zonal_data_drift('salt',salt_CMAP,salt_lim,mean='season',\
+#                  st='2000-01',ed='2016-12')   
+# zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
+#                      mean='season',st='2000-01',ed='2016-12')
+# zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
+#                      mean='season',st='2000-01',ed='2016-12')   
     
-zonal_data_drift('temp',temp_CMAP,temp_lim,\
-                  mean='ann',st='1980-02',ed='2016-12')
-zonal_data_drift('temp',temp_CMAP,temp_lim,mean='monthly_clm',\
-                 st='2000-01',ed='2016-12')
+# zonal_data_drift('temp',temp_CMAP,temp_lim,\
+#                   mean='ann',st='1980-02',ed='2016-12')
+# zonal_data_drift('temp',temp_CMAP,temp_lim,mean='monthly_clm',\
+#                  st='2000-01',ed='2016-12')
 
-zonal_data_drift('salt',salt_CMAP,salt_lim,\
-                  mean='ann',st='1980-02',ed='2016-12')
-zonal_data_drift('salt',salt_CMAP,salt_lim,mean='monthly_clm',\
-                 st='2000-01',ed='2016-12')   
+# zonal_data_drift('salt',salt_CMAP,salt_lim,\
+#                   mean='ann',st='1980-02',ed='2016-12')
+# zonal_data_drift('salt',salt_CMAP,salt_lim,mean='monthly_clm',\
+#                  st='2000-01',ed='2016-12')   
     
-''' Zonal mean of Subsurface cross section '''
-zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
-                     mean='monthly_clm',st='2000-01',ed='2016-12')
-zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
-                     mean='ann',st='1980-02',ed='2016-12')
+# ''' Zonal mean of Subsurface cross section '''
+# zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
+#                      mean='monthly_clm',st='2000-01',ed='2016-12')
+# zonal_data_diff_Soda('temp',temp_CMAP,temp_CMAP,temp_lim,[-2,2],\
+#                      mean='ann',st='1980-02',ed='2016-12')
     
-zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
-                     mean='monthly_clm',st='2000-01',ed='2016-12')
-zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
-                     mean='ann',st='1980-02',ed='2016-12')
+# zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
+#                      mean='monthly_clm',st='2000-01',ed='2016-12')
+# zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
+#                      mean='ann',st='1980-02',ed='2016-12')
     
     
 # zonal_data_diff_Soda('u_eastward',uv_CMAP,uv_CMAP,[-.08,.08],[-.05,.05],\
@@ -194,12 +196,15 @@ zonal_data_diff_Soda('salt',salt_CMAP,salt_CMAP,salt_lim,[-.3,.3],\
 # Z_SubT_drift({'1980-01','1990-12'})
 
 # '''Auger Temp vertical section '''
-# Auger_temp_section('temp',temp_levels,temp_CMAP,\
-#                     mean='monthly_clm',st='2000-01',ed='2016-12')
+# Auger_temp_section('temp',temp_levels,temp_CMAP,has_year_zero=True,\
+#                     mean='-',st='0001-01',ed='0005-12')
 # Auger_temp_section('temp',temp_levels,temp_CMAP,\
 #                     mean='ann',st='1980-02',ed='2016-12')
 
+''' Linear trend '''
+Surface_data_trend('zeta',[-80,-24],CMAP_LT,st='0001-01',ed='0120-12')
 
+# zonal_data_trend('salt',[-80,-23],CMAP_LT,st='0005-01',ed='0005-12')
 
 
 # =============================================================================

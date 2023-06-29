@@ -6,7 +6,7 @@ Created on Wed Apr 26 18:05:27 2023
 """
 
 
-PKG_path = 'D:/OneDrive/JNUpack/JNUROMS'
+PKG_path = 'D:/JNUpack/JNUROMS'
 import sys 
 sys.path.append(PKG_path)
 import Tools.JNUROMS as jr
@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 
 
-Grd_name='D:/OneDrive/base142/Warehouse01/Grd_SO_05d_sponge.nc'
+Grd_name='D:/OneDrive/base142/Warehouse01/Grd_SO_05d.nc'
 Data_name='D:/OneDrive/base142/Factory/MantaROMS/Test_nc/Ini_soda_05d_jhlee_198002.nc'
 
 fig_bool=0
@@ -34,7 +34,7 @@ LON,LAT=ncG['lon_rho'][:],ncG['lat_rho'][:]
 
 Coord1=np.where((LAT[:,0]>=-60.1)&(LAT[:,0]<=-59.9))[0]
 
-zr1=jr.zlevs(ncD['Vtransform'][:], ncD['Vstretching'][:],ncD['theta_s'][:], ncD['theta_b'][:],\
+zr1=jr.zlevs(ncD['Vtransform'][:], 4,10, 4,\
             ncD['hc'][:], ncD['sc_r'][:].shape[0],1, ncG['h'][Coord1,:], ncD['zeta'][0,Coord1,:])
 
 Coord2=np.where( ncG['h'][:]>5999)

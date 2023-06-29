@@ -62,7 +62,7 @@
 %  INIname = fullfile(my_root, 'JEJU2_ini_HYCOM_Y2017M01D01.nc');
  INIname = fullfile(['/data4/base158/Warehouse01/soda/', 'Ini_soda_05d_jhlee_198002.nc']);
  
-  NUDname = [my_root 'NUDG_05d_SO.nc'];
+  NUDname = [my_root 'NUDG_05d_SO-v2.nc'];
  
 % Get grid structure.
 
@@ -228,8 +228,8 @@ JendR = Mr-1;
 % southern and northern domain edges over a 8-point linearly tapered
 % nudging scales of 5 to 60 days.
 
-inner1 = 1/180;                        % 60 days at interior limit
-outer1 = 1/2;                         % 1.5 days at boundary
+inner1 = 1/90;                        % 60 days at interior limit
+outer1 = 1/1;                         % 1.5 days at boundary
 width1 = 25;                           % 25 points
 inner2 = 0;                        % 60 days at interior limit
 outer2 = 0;                         % 1.5 days at boundary
