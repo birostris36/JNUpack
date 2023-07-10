@@ -25,12 +25,20 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas as pd
-from scipy.interpolate import interp2d, griddata
+# from scipy.interpolate import interp2d, griddata
 # from pptx import Presentation # 라이브러리 
 # from pptx.util import Inches,Cm, Pt # 사진, 표등을 그리기 위해
 # from pptx.enum.text import PP_ALIGN
 import cartopy
 import matplotlib.path as mpath
+
+# Avg_pth='G:/Models/Cases_CLM/'
+# # Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/Q0701_CLM/LOGS/LOG_Q0701_CLM_02.txt'
+# save_pth='G:/Models/Cases_CLM/tmp/'
+# # Grd_npth='D:/OneDrive/base142/Warehouse01/Grd_Q0_Rtopo30S_Smooth_sponge.nc'
+# Grd_npth='G:/MODEL_DATA/Grd/Grd_SO_05d_sponge.nc'
+# SODA_pth='G:/SODA/'
+
 
 #Avg_pth ='/home/jejunu/JNU_shjo/_data/base201/Cases_A/Q0701/Outputs/Avg/'
 #Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/Q0701/LOGS/LOG_Q0701.txt'
@@ -38,13 +46,33 @@ import matplotlib.path as mpath
 
 #Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/Outputs_srfd/Avg/'
 #Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/LOGS/Log_V205701_M_XSICE_srfd.txt'
-#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/V205701_M_XSICE_SRFD/'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Control/'
 
-Avg_pth='G:/Models/Cases_CLM/'
-Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/TEST/LOGS/Log_TEST_01.txt'
-save_pth='D:/tmp/'
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/Outputs_srfd_xclm/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_XSICE/LOGS/Log_V205701_M_XSICE_srfd_xclm.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Control_xclm/'
 
 
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/ROMSLAB/room_ks01/Outputs/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/ROMSLAB/room_ks01/LOGS/C_Log_V205701_XSICE.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Kate_svn/'
+
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_LSXICE_2/Outputs/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_LSXICE_2/LOGS/C_Log_V205701_XSICE_02.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/ROMS1053_LSXICE/'
+
+Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_LSXICE/Outputs/Avg/'
+Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_A/V205701_LSXICE/LOGS/Log_V205701_LSXICE.txt'
+save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/V205701_LSXICE/'
+
+
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/TEST/Outputs/Avg/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/TEST/LOGS/Log_TEST_01.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Control_CLM/'
+
+#Avg_pth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/Q0701_CLM/Outputs_CLM/Avg01/'
+#Log_npth='/home/jejunu/JNU_shjo/_data/base201/Cases_CLM/Q0701_CLM/LOGS/LOG_Q0701_CLM_02.txt'
+#save_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse02/Q0701_CLM/'
 
 # Avg_pth='G:/Models/V205701_MW_400vic/Avg/'
 # Log_npth='G:/Models/V205701_MW_400vic/Log_V205701_MW_400VIC.txt'
@@ -55,7 +83,7 @@ save_pth='D:/tmp/'
 # save_pth='D:/OneDrive/base142/Warehouse02/V205701_MW_XICE/'
 
 #Grd_npth='/home/jejunu/JNU_shjo/_data/base201/Warehouse01/GRD/Grd_Q0_Rtopo30S_Smooth_sponge.nc'
-Grd_npth='G:/MODEL_DATA/Grd/Grd_SO_05d_sponge.nc'
+Grd_npth='/home/jejunu/JNU_shjo/_data/base201/Warehouse01/GRD/Grd_SO_05d_sponge.nc'
 SODA_pth='/home/jejunu/JNU_shjo/_data/base201/Warehouse01/SODA/'
 
 fig_bool=1
@@ -167,7 +195,7 @@ def Plot_SO_Spherical3(lonA,latA,MyDATA,t_name,CMAP,my_lim,w_path,save_name,fig_
     #plt.clim(Mylim[0],Mylim[-1])
     
     # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
-    ax.set_extent([0, 360, -80, -24], crs=PC)
+    # ax.set_extent([0, 360, -80, -24], crs=PC)
     
     ax.tick_params(axis='both', which='major', labelsize=28)
 
@@ -484,7 +512,7 @@ def Stability01():
                 PD = pd.DataFrame({},columns=header_name)
                 stid=i
             tmp1=Model_Log[i].lstrip()
-            if i>stid and len(tmp1) and tmp1[0].isnumeric() and not i>len(Model_Log)-300:
+            if i>stid and len(tmp1) and tmp1[0].isnumeric() and not i>len(Model_Log)-1000:
                 A= [ii.strip() for ii in tmp1.split(' ') if len(ii)]
                 [A.append(ii.strip()) for ii in Model_Log[i+1].lstrip().split(' ') if len(ii)]
                 PD.loc[j] = A
@@ -727,6 +755,189 @@ def Stability02():
         plt.savefig(save_pth+'Model_stability2')
     plt.show()
 
+def Stability03(lon_rng,lat_rng):
+    # lon_rng,lat_rng --> For transport (Sv)
+    global Avg_pth, Log_npth, save_pth,fig_bool, Grd_npth
+
+    ncs=[Avg_pth+i for i in os.listdir(Avg_pth) if i.endswith('.nc')]
+
+    SampleNC=Dataset(ncs[0])
+    
+    # Variables=SampleNC.variables.keys()
+    
+    PN,PM=SampleNC['pn'][:]*10**3,SampleNC['pm'][:]*10**3 # km
+    CELL_size=1/PN*1/PM # m**2
+    
+    # ZETA
+    ZETA=MFDataset(ncs)['zeta']
+    ZETA_values=ZETA[:]
+    ZETA_area=np.zeros_like(ZETA_values)
+    n=0
+    for i in ZETA_values:
+        ZETA_area[n]=i*CELL_size
+        n+=1
+    
+    Total_size=np.sum(CELL_size)
+
+    ZETA_timeseries=np.sum(ZETA_area,axis=2).sum(axis=1)/Total_size
+    
+    # AICE
+    try:
+        AICE=MFDataset(ncs)['aice']
+        AICE_values=AICE[:]
+        AICE_area=np.zeros(AICE_values.shape[0])
+        #print(AICE_area.shape)
+        n=0
+        for i in AICE_values:
+    
+            i[i>=0.15] = 1
+            i[i<0.15] = 0
+        
+            AICE_area[n]=np.nansum(i*CELL_size)*10**-6
+            n+=1
+    except:
+        AICE_area=np.zeros_like(ZETA_timeseries)
+    #AICE_timeseries=np.sum(AICE_area,axis=2).sum(axis=1)/Total_size
+    AICE_timeseries=AICE_area
+    #print(AICE_timeseries)
+    
+    t=np.arange(len(AICE_timeseries))
+    
+    #AICE_fp1=np.polyfit(t[200:],AICE_timeseries[200:],1)
+    #AICE_trend=np.polyval(AICE_fp1,t[200:])
+    
+   ###########################################
+   
+    AVGS=[Avg_pth+i for i in os.listdir(Avg_pth) if i.endswith('.nc')]
+
+    Sample_Data=Dataset(AVGS[0])
+    lat_rho,lon_rho=Sample_Data['lat_rho'][:],Sample_Data['lon_rho'][:]
+    lat_co=np.where((lat_rho[:,0]>=lat_rng[0])&(lat_rho[:,0]<=lat_rng[-1]))[0]
+    
+    dl_x=np.min(np.diff(lon_rho))
+
+    lon_co=np.where((lon_rho[0,:]>lon_rng-dl_x/2)&(lon_rho[0,:]<lon_rng+dl_x/2))[0]
+    print('lon_co: ',lon_co)
+    
+    if len(lon_co) !=1:
+        print('!!!!!!!!!!!!!!!!!!')
+        raise
+    
+    lon_rho,lat_rho=np.meshgrid(lon_rho[0,lon_co],lat_rho[lat_co,0])
+    NC=xr.open_mfdataset(AVGS[0])
+
+    U=xr.open_mfdataset(AVGS)['u_eastward'].loc[dict(xi_rho=lon_co,eta_rho=lat_co)].squeeze()
+    ZETA=xr.open_mfdataset(AVGS)['zeta'].loc[dict(xi_rho=lon_co,eta_rho=lat_co)].squeeze().values
+    TOPO=xr.open_dataset(Grd_npth).h.loc[dict(xi_rho=lon_co,eta_rho=lat_co)].squeeze().values
+    PN=xr.open_dataset(Grd_npth).pn.loc[dict(xi_rho=lon_co,eta_rho=lat_co)].squeeze().values
+
+    T,th,at=U.shape
+
+    SV=[]
+    Z=jr.zlevs(NC['Vtransform'].values, NC['Vstretching'].values,NC['theta_s'].values,\
+           NC['theta_b'].values, NC['Tcline'].values,  U.s_rho.shape[0] ,5, TOPO, ZETA[-1])
+    
+    Z_=jr.zlevs(NC['Vtransform'].values, NC['Vstretching'].values,NC['theta_s'].values,\
+           NC['theta_b'].values, NC['Tcline'].values,  U.s_rho.shape[0] ,1, TOPO, ZETA[-1])
+        
+    lat_m,_=np.meshgrid(lat_rho,Z_[:,0])
+    
+    X_dist=np.tile(1/PN,th).reshape([th,at])
+    delta_D=Z[1:,:]-Z[:-1,:]
+
+    CELL=delta_D*X_dist #(Unit: m*m=m**2)
+    CELL=CELL*10**-6
+    
+    for i in U.values:
+        SV_sum=np.nansum(CELL*i)    
+        SV.append(SV_sum)
+    SV=np.array(SV)
+    
+    
+    # SV_sum=np.nansum(CELL*U.values,axis=)    
+
+   
+    
+    t=range(len(ZETA_timeseries))
+    
+    #SST_fp1=np.polyfit(t,SST_timeseries,1)
+    #SST_trend=np.polyval(SST_fp1,t)
+    
+    
+    Model_Times1 = t
+    Model_Times2=[str(i/12)[:2] for i in t]
+
+    Label_size = 25
+    fig, axs = plt.subplots(3,1,figsize=(11,6.5),constrained_layout = True,
+                            sharex=True,gridspec_kw={'height_ratios': [1, 1.,1]},dpi=200)
+    f1 = axs[0].plot(Model_Times1,ZETA_timeseries, label='ZETA',color='k',linewidth=2,zorder=0)
+    # axs[0].plot(np.array(Model_Times1)[t_co],f1_z2(tmp_t),color='r',linewidth=3,linestyle='dashed')
+    axs[0].tick_params(axis='y', labelsize=Label_size)
+    # axs[0].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
+    xtick_location = Model_Times1[5::12]
+    xtick_labels = Model_Times2[5::12]
+    axs[0].set_xticks(ticks=xtick_location)
+    axs[0].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
+    # axs[0].grid(axis='x', alpha=.3,linestyle='-.',color='k')
+    # axs[0].set_ylim(Zeta2d.data.mean()-Zeta2d.data.std()*2.5,\
+    #                 Zeta2d.data.mean()+Zeta2d.data.std()*7)# axs[0].set_yticks(ticks=np.arange(18,23,1))
+    axs[0].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+    axs[0].tick_params(axis='y', direction='in', length=6, pad=8, labelsize=Label_size-3, width=1., color='k')
+    axs[0].legend(fontsize=18)
+    axs[0].set_ylim(-0.4,0.3)
+    #! Fig2 
+    f1 = axs[1].plot(Model_Times1,AICE_timeseries, label='SeaIce extent',color='k',linewidth=2,zorder=0)
+    # axs[1].plot(np.array(Model_Times1)[t_co],f1_m2(tmp_t),color='r',linewidth=3,linestyle='dashed')
+    axs[1].tick_params(axis='y', labelsize=Label_size)
+    xtick_location = Model_Times1[5::12*10]
+    xtick_labels =Model_Times2[5::12*10]
+    axs[1].set_xticks(ticks=xtick_location)
+    axs[1].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
+    # axs[1].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
+    # axs[1].set_ylim(Momentum2d.data.mean()-Momentum2d.data.std()*2.5,\
+    #                 Momentum2d.data.mean()+Momentum2d.data.std()*3.)
+    # axs[1].set_yticks(ticks=np.arange(18,23,1))
+    axs[1].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+    axs[1].legend(fontsize=18,loc=4)
+    
+    f1 = axs[2].plot(Model_Times1,SV, label='Drake (Sv)',color='k',linewidth=2,zorder=0)
+    # axs[2].plot(np.array(Model_Times1)[t_co],f1_m3(tmp_t),color='r',linewidth=3,linestyle='dashed')
+    axs[2].tick_params(axis='y', labelsize=Label_size)
+    xtick_location = Model_Times1[0::12*10]
+    xtick_labels =Model_Times2[0::12*10]
+    axs[2].set_xticks(ticks=xtick_location)
+    axs[2].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
+    # axs[2].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
+    # axs[2].set_ylim(Momentum3d.data.mean()-Momentum3d.data.std()*2.5,\
+    #                 Momentum3d.data.mean()+Momentum3d.data.std()*3.)
+    # axs[1].set_yticks(ticks=np.arange(18,23,1))
+    axs[2].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+    axs[2].legend(fontsize=18,loc='upper right')
+    axs[2].set_ylim(90,160)
+    
+    #f1 = axs[3].plot(Model_Times1,SST_timeseries, label='SST',color='k',linewidth=2,zorder=0)
+    # axs[2].plot(np.array(Model_Times1)[t_co],f1_m3(tmp_t),color='r',linewidth=3,linestyle='dashed')
+    #axs[3].tick_params(axis='y', labelsize=Label_size)
+    #xtick_location = Model_Times1[0::12*10]
+    #xtick_labels =Model_Times2[0::12*10]
+    #axs[3].set_xticks(ticks=xtick_location)
+    #axs[3].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
+    # axs[2].set_xlim(Model_Times1.values[0],Model_Times1.values[-1])
+    # axs[2].set_ylim(Momentum3d.data.mean()-Momentum3d.data.std()*2.5,\
+    #                 Momentum3d.data.mean()+Momentum3d.data.std()*3.)
+    # axs[1].set_yticks(ticks=np.arange(18,23,1))
+    #axs[3].tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+    #axs[3].legend(fontsize=18,loc=4)
+    #axs[3].set_ylim(7,12.6)
+    
+    plt.tight_layout()
+    if fig_bool:
+        plt.savefig(save_pth+'ppt/'+'Model_stability3',
+                facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+        plt.savefig(save_pth+'Model_stability3')
+    plt.show()
+
+
 # Plot Surface results
 def data_drift(data_nm,lat_rng,My_levels,cmap,data_lim,**kargs):
     global Avg_pth, save_pth,fig_bool
@@ -828,7 +1039,7 @@ def Auger_temp_section(data_nm,My_levels,cmap,has_year_zero=False,**kargs):
         TIMES_co=np.where( (OGCM_times>=Tst)&(OGCM_times<=Ted) )[0]
 
     else:
-        OGCM_times=num2date(OGCM_TIMES[:],units,has_year_zero=has_year_zero)
+        OGCM_times=num2date(OGCM_TIMES[:],units)
         Tst=dt.datetime(int(t_rng[0].split('-')[0]), int(t_rng[0].split('-')[1]),1)
         Ted=dt.datetime(int(t_rng[1].split('-')[0]), int(t_rng[1].split('-')[1]),31)
         TIMES_co=np.where( (OGCM_times>=Tst)&(OGCM_times<=Ted) )[0]
@@ -1507,25 +1718,95 @@ def zonal_data_trend(data_nm,lat_rng,cmap,**kargs):
         plt.savefig(save_pth+s_name_S+'/'+s_name_S,bbox_inches='tight')
     plt.show()
 
+def Zonal_data_trend(data_nm,lat_rng,cmap,**kargs):
+    global Avg_pth, save_pth, fig_bool, Grd_npth
+    
+    TOPO=xr.open_dataset(Grd_npth).h.mean(dim='xi_rho')
 
+    AVGS=[Avg_pth+i for i in os.listdir(Avg_pth) if i.endswith('.nc')]
+    
+    NC=Dataset(AVGS[0])
+    lat_rho,lon_rho=NC['lat_rho'][:],NC['lon_rho'][:]
+    lat_co=np.where((lat_rho[:,0]>=lat_rng[0])&(lat_rho[:,0]<=lat_rng[-1]))[0]
+    lon_rho,lat_rho=np.meshgrid(lon_rho[0,:],lat_rho[lat_co,0])
+            
+    data_=xr.open_mfdataset(AVGS)[data_nm].loc[dict(eta_rho=lat_co,ocean_time=slice(kargs['st'],kargs['ed']))]\
+        .mean(dim='xi_rho').squeeze()
 
+    zeta=xr.open_mfdataset(AVGS[0])['zeta'].mean(dim='xi_rho').squeeze()
+    lat=NC['lat_rho'][:,0]
 
+    # Linear trend
+    data=data_.assign_coords({'TT':('ocean_time',range(len(data_.ocean_time)))})
+    data=data.swap_dims({"ocean_time":"TT"})
+    data_s=data.polyfit(dim='TT',deg=1,skipna=True)
+    Coef=data_s.polyfit_coefficients[0]
+    Coef_var=Coef.values*12 # (m/year)
+    
+    My_lim=np.nanmean(Coef_var)+np.nanstd(Coef_var)*3.5
+    my_lim=[-My_lim,My_lim]
+    
+    # zonal_zeta_m=zeta.mean(dim='xi_rho')
 
+    zeros_zeta=np.zeros_like(zeta[0,:])
+    Z=jr.zlevs(NC['Vtransform'][:], NC['Vstretching'][:],NC['theta_s'][:],\
+           NC['theta_b'][:], NC['Tcline'][:], NC['s_rho'][:].shape[0],1, TOPO.values, zeros_zeta)
+        
+    lat_m,z_m=np.meshgrid(lat,Z[:,0])
 
+    Label_size=12
+    xtick_location = np.linspace(lat[0], lat[-1],6)
+    xtick_labels = [f'{ii:0.1f}' for ii in xtick_location]    
 
+    #CMAP_trend=plt.get_cmap('seismic',15)
+    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    t_name=data_nm.upper()+' trend ['+kargs['st'].replace('-','')+'_'+kargs['ed'].replace('-','')+']'
+        
+    s_name_S='Zonal_trend_'+data_nm+'_'+\
+        kargs['st'].replace('-','')+'_'+kargs['ed'].replace('-','')
+        
+    try:
+        os.mkdir(save_pth+s_name_S) 
+        os.mkdir(save_pth+s_name_S+'/ppt') 
+    except:
+        pass
+        
+    # Figures
+    fig, axs = plt.subplots(2,1,figsize=(6,4),
+                            sharex=True,gridspec_kw={'height_ratios': [1, 1.3],'wspace':0, 'hspace':0.05},dpi=200)
+    # fig.subplots_adjust(wspace=0, hspace=0)
+    axs[0].set_title(t_name,loc='right',fontdict={'fontsize':Label_size,'fontweight':'regular'})
+  #  im0=axs[0].contour(lat_m,Z,i,colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
+  #  axs[0].clabel(im0, inline=1, fontsize=14)
+  #  im0.collections[1].set_linestyle('dashed')
+    im1=axs[0].pcolor(lat_m,Z,Coef_var,cmap=cmap,vmin=my_lim[0],vmax=my_lim[-1])
+    axs[0].tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
+    axs[0].tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size, color='k',right=True)
+    axs[0].set_ylim(-NC['Tcline'][0],0)
+    axs[0].set_xlim(-80,-23.5)
+  #  im3=axs[1].contour(lat_m,Z,i,vmin=data_lim[0],vmax=data_lim[-1],colors='k',levels=[-1.5,1.5,4.5,8,11],linestyle='-')
+#    axs[1].clabel(im0, inline=1, fontsize=14)
+    axs[0].set_xticks(ticks=xtick_location)
+    axs[0].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
+    axs[0].set_facecolor(color='#dddddd')
+    
+    # im4=axs[1].clabel(colors='k',CS=im3,inline=True,fmt='%1.f')
+    im2=axs[1].pcolor(lat_m,Z,Coef_var,cmap=cmap,vmin=my_lim[0],vmax=my_lim[-1])
+    axs[1].tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
+    axs[1].tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size,  color='k',right=True)
+    axs[1].set_ylim(-5000,-NC['Tcline'][-1])
+    axs[1].set_xlim(-80,-23.5)
+    axs[1].set_xticks(ticks=xtick_location)
+    axs[1].set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=.7)
+    axs[1].set_facecolor(color='#dddddd')
+    divider = make_axes_locatable(axs[1])
+    cax = divider.append_axes("bottom", size="7%", pad=.35)
+    cax.tick_params(labelsize=Label_size)
+    cax.set_ylabel('',{'fontsize':Label_size,'fontweight':'bold','style':'italic'})
+    h = fig.colorbar(im1, ax=axs[:],label='',cax=cax,orientation="horizontal",extend='both',aspect=50)
+    if fig_bool:
+        plt.savefig(save_pth+s_name_S+'/ppt/'+s_name_S,
+                    facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+        plt.savefig(save_pth+s_name_S+'/'+s_name_S,bbox_inches='tight')
+    plt.show()

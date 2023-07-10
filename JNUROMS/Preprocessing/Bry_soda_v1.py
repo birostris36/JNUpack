@@ -9,7 +9,7 @@ Name :
 Reference :
 Description :
 """
-PKG_path = 'D:/OneDrive/JNUpack/JNUROMS/'
+PKG_path = 'D:/JNUpack/JNUROMS/'
 import sys 
 sys.path.append(PKG_path)
 import Tools.JNUROMS as jr
@@ -21,13 +21,13 @@ from scipy.interpolate import griddata
 import datetime as dt
 from tqdm import tqdm
 from copy import deepcopy
-My_Bry='G:/MODEL_DATA/Bry/Bry_Q0_Rtopo30S_S_soda_64250701_198001.nc'
-My_Grd='G:/MODEL_DATA/Grd/Grd_Q0_Rtopo30S_Smooth.nc'
+My_Bry='G:/MODEL_DATA/Bry/Bry_Q1_Rtopo30S_S_soda_50250701_198001_201712.nc'
+My_Grd='G:/MODEL_DATA/Grd/Grd_Q1_Rtopo30S_Smooth.nc'
 OGCM_PATH='G:/SODA/'
 
-Bry_title='Bry_Q0_Rtopo30S_S_soda_64250701_198001'
+Bry_title='Bry_Q1_Rtopo30S_S_soda_50250701_198001_201712'
 # My Variables
-MyVar={'Layer_N':64,'Vtransform':2,'Vstretching':5,\
+MyVar={'Layer_N':50,'Vtransform':2,'Vstretching':5,\
        'Theta_s':7,'Theta_b':1,'Tcline':450,'hmin':50}
 
 # OGCM Variables
@@ -252,7 +252,7 @@ for i,n in zip(OGCM_Data['zeta'],range(Rzeta.shape[0])):
                  1,topo[-2:],i);        
     zw[n,:,:,:]=jr.zlevs(MyVar['Vtransform'],MyVar['Vstretching'],MyVar['Theta_s'],\
              MyVar['Theta_b'],MyVar['Tcline'],MyVar['Layer_N'],\
-                 5,topo[-2:],i);  
+                 5,topo[-2:],i)
 zu=rho2u_4d(zr_)[:,:,-1,:]
 zv=rho2v_4d(zr_).squeeze()
 dzr=zw[:,1:,:,:]-zw[:,:-1,:,:] # [t,depth,lat,lon]

@@ -84,10 +84,11 @@ CMAP_LT=CMAP=plt.get_cmap('seismic',15)
 
 # ''' My ppt '''
 # check_inputs()
-
+lon_rng= 295
+lat_rng=[-65,-55]
 # ''' Stability check 1,2 '''
 # Stability01()
-# Stability02() # Temp trand, aice trend
+# Stability03(lon_rng,lat_rng) # Temp trand, aice trend
 
 # ''' Horizontal mean of Surface layer data '''
 # data_drift('zeta',[-80,-24],zeta_levels,zeta_CMAP,zeta_lim,\
@@ -196,13 +197,13 @@ CMAP_LT=CMAP=plt.get_cmap('seismic',15)
 # Z_SubT_drift({'1980-01','1990-12'})
 
 # '''Auger Temp vertical section '''
-# Auger_temp_section('temp',temp_levels,temp_CMAP,has_year_zero=True,\
-#                     mean='-',st='0001-01',ed='0005-12')
+Auger_temp_section('temp',temp_levels,temp_CMAP,has_year_zero=True,\
+                    mean='-',st='0001-01',ed='0005-12')
 # Auger_temp_section('temp',temp_levels,temp_CMAP,\
 #                     mean='ann',st='1980-02',ed='2016-12')
 
-''' Linear trend '''
-Surface_data_trend('zeta',[-80,-24],CMAP_LT,st='0001-01',ed='0120-12')
+# ''' Linear trend '''
+# Surface_data_trend('zeta',[-80,-24],CMAP_LT,st='0001-01',ed='0120-12')
 
 # zonal_data_trend('salt',[-80,-23],CMAP_LT,st='0005-01',ed='0005-12')
 

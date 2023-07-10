@@ -38,7 +38,7 @@ close all
 ROMS_TOOLS_PATH='D:/OneDrive/Sources/Tools/Roms_tools_ori/';
 % addpath('D:/OneDrive/base142/Factory/')
 addpath([ROMS_TOOLS_PATH,'/Preprocessing_tools/'])
-addpath('D:/OneDrive/JNUpack/JNUROMS/Preprocessing/Grd/src/')
+addpath('D:/JNUpack/JNUROMS/Preprocessing/Grd/src/')
 
 addpath([ROMS_TOOLS_PATH,'/mask/'])
 Manta_path
@@ -204,6 +204,9 @@ if strcmp(r,'y')
   disp(' ')
   if ~isempty(coastfileplot)
     editmask(grdname,coastfilemask)
+
+    editmask('G:/MODEL_DATA/Grd/Grd_Q1_Rtopo30S_Smooth.nc',coastfilemask)
+
   else
     editmask(grdname)
   end

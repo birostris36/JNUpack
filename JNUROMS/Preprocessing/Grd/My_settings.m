@@ -47,10 +47,10 @@
 %
 %  ROMS title names and directories
 %
-ROMS_title  = 'Q0_Rtopo30S_Smooth';
-ROMS_config = 'Q0_Rtopo30S_Smooth';
-SAVE_dir='D:/OneDrive/base142/Warehouse01/';
-grdname  = [SAVE_dir,'TEST.nc'];
+ROMS_title  = 'Q1_Rtopo30S_Smooth';
+ROMS_config = 'Q1_Rtopo30S_Smooth';
+SAVE_dir='G:/MODEL_DATA/Grd/';
+grdname  = [SAVE_dir,'Q1_Rtopo30S_Smooth.nc'];
 frcname  = [SAVE_dir,'Frc.nc'];
 bryname  = [SAVE_dir,'Bry___.nc'];
 ininame  = [SAVE_dir,'Ini.nc'];
@@ -61,7 +61,7 @@ ininame  = [SAVE_dir,'Ini.nc'];
 lonmin =  0.3;   % Minimum longitude [degree east]
 lonmax =  359.7;   % Maximum longitude [degree east]
 latmin =  -77.1;   % Minimum latitudeF  [degree north]
-latmax =  -24;   % Maximum latitude  [degree north]
+latmax =  -15;   % Maximum latitude  [degree north]
 %
 % Grid resolution [degree]
 %

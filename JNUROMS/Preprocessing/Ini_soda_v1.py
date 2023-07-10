@@ -10,7 +10,7 @@ Reference :
 Description :
 """
 
-PKG_path = 'D:/OneDrive/JNUpack/JNUROMS/'
+PKG_path = 'D:/JNUpack/JNUROMS/'
 import sys 
 sys.path.append(PKG_path)
 import Tools.JNUROMS as jr
@@ -23,13 +23,13 @@ import datetime as dt
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-My_Ini='G:/MODEL_DATA/Ini/Ini_Q0_Rtopo30S_S_soda_64250701_198001.nc'
-My_Grd='G:/MODEL_DATA/GRD/Grd_Q0_Rtopo30S_Smooth.nc'
+My_Ini='G:/MODEL_DATA/Ini/Ini_Q1_Rtopo30S_S_soda_50250701_198001.nc'
+My_Grd='G:/MODEL_DATA/GRD/Grd_Q1_Rtopo30S_Smooth.nc'
 OGCM_PATH='G:/SODA/'
 
-Ini_title='Ini_Q0_Rtopo30S_S_soda_64250701_198001'
+Ini_title='Ini_Q1_Rtopo30S_S_soda_50250701_198001'
 # My Variables
-MyVar={'Layer_N':64,'Vtransform':2,'Vstretching':5,\
+MyVar={'Layer_N':50,'Vtransform':2,'Vstretching':5,\
        'Theta_s':7,'Theta_b':.1,'Tcline':450,'hmin':50}
 conserv=1
 # OGCM Variables

@@ -56,14 +56,15 @@
 % restoredefaultpath
 % startup
 
- my_root = '/data4/base158/Warehouse01/';
+ my_root = 'G:/MODEL_DATA/CLM/';
 
- GRDname = fullfile(['/data4/base158/Warehouse01/', 'Grd_SO_05d_sponge.nc']);
+ GRDname = fullfile(['G:/MODEL_DATA/Grd/', 'Grd_Q1_Rtopo30S_Smooth.nc']);
 %  INIname = fullfile(my_root, 'JEJU2_ini_HYCOM_Y2017M01D01.nc');
- INIname = fullfile(['/data4/base158/Warehouse01/soda/', 'Ini_soda_05d_jhlee_198002.nc']);
+ INIname = fullfile(['G:/MODEL_DATA/Ini/', 'Ini_Q1_Rtopo30S_S_soda_50250701_198001.nc']);
  
-  NUDname = [my_root 'NUDG_05d_SO-v2.nc'];
+  NUDname = [my_root 'NUDG_Q1.nc'];
  
+
 % Get grid structure.
 
 G = get_roms_grid(GRDname, INIname);
@@ -77,7 +78,7 @@ Nr=50;
 
 % Set switches for state variables to nudge.
 
-LnudgeM2CLM    = false;           % nudging 2D momentum
+LnudgeM2CLM    = true;           % nudging 2D momentum
 LnudgeM3CLM    = true;           % nudging 3D momentum
 LnudgeTCLM     = true;           % nudging tracers (usually T-S)
 LnudgeTgeneric = true;           % nudging generic tracers
@@ -228,8 +229,8 @@ JendR = Mr-1;
 % southern and northern domain edges over a 8-point linearly tapered
 % nudging scales of 5 to 60 days.
 
-inner1 = 1/90;                        % 60 days at interior limit
-outer1 = 1/1;                         % 1.5 days at boundary
+inner1 = 1/180;                        % 60 days at interior limit
+outer1 = 1/2;                         % 1.5 days at boundary
 width1 = 25;                           % 25 points
 inner2 = 0;                        % 60 days at interior limit
 outer2 = 0;                         % 1.5 days at boundary
