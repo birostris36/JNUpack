@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 15 11:08:42 2023
+Created on Wed Jul 12 14:00:37 2023
 
 @author: shjo9
 """
 
 # # Module import
-
 import matplotlib
 matplotlib.use('Agg') #Generates figures in Backend
 import sys
@@ -23,7 +22,7 @@ Grd_npth='G:/MODEL_DATA/Grd/Grd_SO_05d_sponge.nc'
 SODA_pth='G:/SODA/'
 Avg_pth='G:/Models/tmp/'
 Log_npth='G:/Models/Cases_CLM/Log_TEST_01.txt'
-sv_pth='G:/tmp/My_TEST'
+sv_pth='G:/tmp'
 
 ### ZETA ======================================================================
 zeta_NN=16

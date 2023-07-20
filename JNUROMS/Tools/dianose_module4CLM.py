@@ -1624,7 +1624,7 @@ def Surface_data_trend(data_nm,lat_rng,cmap,**kargs):
     except:
         pass
     
-    Plot_SO_Spherical3(data.lon_rho,data.lat_rho,Coef,\
+    Plot_SO_Spherical3(data.lon_rho,data.lat_rho,Coef_var,\
                           t_name,cmap,my_lim,\
                           save_pth+s_name_S,s_name_S,True)
         

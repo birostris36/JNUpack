@@ -50,7 +50,7 @@
 ROMS_title  = 'Q1_Rtopo30S_Smooth';
 ROMS_config = 'Q1_Rtopo30S_Smooth';
 SAVE_dir='G:/MODEL_DATA/Grd/';
-grdname  = [SAVE_dir,'Q1_Rtopo30S_Smooth.nc'];
+grdname  = [SAVE_dir,'Grd_Q1_Rtopo30S_Smooth.nc'];
 frcname  = [SAVE_dir,'Frc.nc'];
 bryname  = [SAVE_dir,'Bry___.nc'];
 ininame  = [SAVE_dir,'Ini.nc'];

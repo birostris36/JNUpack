@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jul 10 14:54:44 2023
+Created on Mon Jul 17 00:11:40 2023
 
 @author: shjo9
 """
+
 
 import matplotlib.pyplot as plt
 import gsw.density as gsw_d
@@ -17,7 +18,7 @@ nc_pth='G:/EN4_22_anal/'
 
 NC = [nc_pth+i for i in os.listdir(nc_pth) if i.endswith('.nc')]
 
-EN4=xr.open_mfdataset(NC).loc[dict(depth=slice(700,2000),time=slice('1980-01','2023-12'),lat=slice(-80,-10))]
+EN4=xr.open_mfdataset(NC).loc[dict(depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10),lon=slice(300,360))]
 
 LON,LAT,DEPTH=EN4.lon,EN4.lat,EN4.depth
 db=EN4.depth_bnds
@@ -38,16 +39,14 @@ t=gsw_c.t_from_CT(SA,CT,DEPTH)
 # Heat capacity
 CP = cp_t_exact(SA,t,DEPTH)
 
-dz = db[:,:,1]-db[:,:,0]
+# dz = db[:,:,1]-db[:,:,0]
 
-OHC_=CP*CT*rho*dz
-
-# Integrates from ref depth (2000m) 
-OHC=OHC_.sum(dim='depth',skipna=False)
-
+OHC=CP*CT*rho
+# OHC=OHC.rolling(time=12,center=True).mean()
+OHC=OHC.mean(dim='lon')
 OHC=OHC.rename('OHC')
 
-OHC.to_netcdf('D:/HEAT/EN4_OHC_SO_c14_700m2000m_1980_2023.nc',format='netcdf4')
+OHC.to_netcdf('D:/HEAT/V_EN4_OHC_SO_c14_ATL_1Y_700m_1980_2023.nc',format='netcdf4')
 
 
 # OHC[-1].plot(cmap=plt.get_1cmap('jet',15),vmin=-1*10**10,vmax=12*10**10,)
