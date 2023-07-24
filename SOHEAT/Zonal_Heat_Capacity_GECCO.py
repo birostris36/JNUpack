@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jul 16 23:55:37 2023
+Created on Mon Jul 24 11:20:34 2023
 
 @author: shjo9
 """
+
 
 import sys
 sys.path.append('D:/JNUpack/Mapping/Colorbars/bipolar/')
@@ -24,10 +25,10 @@ My_str='PAC'
 
 # from eofs.standard import Eof 
 NN=10
-pth='D:/HEAT/DATA/'
-ncname='V_EN4_OHC_SO_c14_'+My_str+'_700m_1980_2023.nc'
+pth='E:/_data/MyOHC/'
+ncname='V_GECCO_OHC_SO_c14_'+My_str+'_700m_1980_2018.nc'
 w_path='D:/HEAT/EOF_V/'
-Dir_pth='EOF_ohc_700m_1Y_'+My_str
+Dir_pth='EOF_GECCO_ohc_700m_1Y_'+My_str
 
 
 try:
@@ -49,18 +50,18 @@ CMAP = ListedColormap(Mycmap(
     np.linspace(0, 1, len(My_levels)-1,endpoint=True)) )
 
 OHC = xr.open_dataset(pth+ncname).\
-    loc[dict(time=slice('1980-01','2018-12'),lat=slice(-65,-10))].OHC
+    loc[dict(time=slice('1980-01','2023-12'),lat=slice(-65,-10))].OHC
 
 OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
 
 ### EOF =======================================================================
 solver=Eof(OHC_2Y)
-eofs = -solver.eofs(neofs=NN, eofscaling=0)
-pcs = -solver.pcs(npcs=NN,pcscaling=0)
+eofs = solver.eofs(neofs=NN, eofscaling=0)
+pcs = solver.pcs(npcs=NN,pcscaling=0)
 var_=solver.varianceFraction(NN)*100
 var=var_/np.sum(var_)*100
 
-depth,lat=eofs.depth,eofs.lat
+depth,lat=eofs.Depth,eofs.lat
 lat_m,depth_m=np.meshgrid(lat,depth)
 
 ### define =======================================================================
@@ -124,17 +125,15 @@ for i,j,n,m in zip(eofs[0:10].values*fac,np.arange(1,11),var.values,var_.values)
     t_name=My_str+f' {j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
     i[i>Mylim[-1]]=Mylim[-1]
     i[i<Mylim[0]]=Mylim[0]
-    plot_v_eofs(lat_m,depth_m,i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=False)
-    plot_v_eofs(lat_m,depth_m,-i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=False)
-
+    plot_v_eofs(lat_m,depth_m,i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=True)
+    plot_v_eofs(lat_m,depth_m,-i,t_name,CMAP,Mylim,My_levels,w_path,save_name+'_re',fig_bool=True)
 
 ### Plot pcs =======================================================================
 for i,j,n,m in zip(pcs.values.transpose(),np.arange(1,11),var.values,var_.values):
     save_name='PC_'+f'{j:02d}'+'mode'
     t_name=My_str+f' {j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
-    plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=False)
-    plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name,fig_bool=False)
-
+    plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=True)
+    plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name+'_re',fig_bool=True)
 
 '''
 NN=3
@@ -150,8 +149,7 @@ t_name=My_str+f' {j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
 plot_v_eofs(lat_m,depth_m,i1,t_name,CMAP,Mylim,My_levels,'w_path','save_name',fig_bool=False)
 plot_pcs(TIME,TIME2,i2,t_name,'w_path','save_name',fig_bool=False)
 '''
-
-NN=1
+NN=0
 i2=pcs.values.transpose()[NN]
 j=np.arange(1,11)[NN]
 n=var.values[NN]
@@ -179,13 +177,13 @@ normal_mei=mei_2Y/np.max(mei_2Y)
 normal_i=i2/np.max(i2)
 
 
-np.corrcoef(normal_mei[6:-5].values.reshape(-1),normal_i.reshape(-1))
+np.corrcoef(normal_mei[6:-57].values.reshape(-1),normal_i.reshape(-1))
 
 Label_size = 18
 fig, axs = plt.subplots(1,1,figsize=(10,5),constrained_layout = True,
                     dpi=200)
 f1 = axs.plot(TIME,-normal_i, label='pc 2 mode',color='k',linewidth=2,zorder=0)
-f2 = axs.plot(TIME,normal_mei[6:-5], label='MEI index',color='r',linewidth=2,zorder=0)
+f2 = axs.plot(TIME,normal_mei[6:-57], label='MEI index',color='r',linewidth=2,zorder=0)
 
 axs.set_title(t_name,loc='right',fontdict={'fontsize':20,'fontweight':'regular','fontstyle':'italic'})
 axs.tick_params(axis='both', labelsize=Label_size)

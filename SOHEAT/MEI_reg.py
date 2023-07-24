@@ -18,7 +18,7 @@ import cartopy.feature as cf
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from copy import deepcopy
 pth='D:/HEAT/DATA/'
-ncname='EN4_OHC_GLOBAL_c14_700m_1980_2023.nc'
+ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
 ORI=pd.read_csv('D:/HEAT/Signals/MEI_ori.csv',header=None)
 
 CNN=16
@@ -98,9 +98,9 @@ def linearRegress4Cube(sig,dataset,Slicing_date,method=1):
     return Coef, p_values
 
 ### Linear regression & p-values ==============================================
-re=pd.DataFrame({'X':mei_2Y.values[6:-5].reshape(-1)},index=OHC_2Y.OHC[6:-5].time)
-Coef,pvalue=linearRegress4Cube(re,OHC_2Y.OHC.values[6:-5],['1980-1','2023-12'],method='sm')
-Coef,_=linearRegress4Cube(re,OHC_2Y.OHC.values[6:-5],['1980-1','2023-12'],method='1')
+re=pd.DataFrame({'X':mei_2Y.values[6:-57].reshape(-1)},index=OHC_2Y.OHC[6:-5].time)
+Coef,pvalue=linearRegress4Cube(re,OHC_2Y.OHC.values[6:-5],['1980-1','2018-12'],method='sm')
+Coef,_=linearRegress4Cube(re,OHC_2Y.OHC.values[6:-5],['1980-1','2018-12'],method='1')
 
 '''re=pd.DataFrame({'X':MEI_index.reshape(-1)},index=OHC.OHC.time)
 Coef,pvalue=linearRegress4Cube(re,OHC.OHC.values,['1980-1','2023-12'],method='sm')

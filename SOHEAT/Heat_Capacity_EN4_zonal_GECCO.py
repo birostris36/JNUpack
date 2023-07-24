@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 21 13:43:25 2023
+Created on Mon Jul 24 09:47:22 2023
 
 @author: shjo9
 """
@@ -16,9 +16,9 @@ import numpy as np
 nc_pth='E:/_data/GECCO/'
 
 TEMP_nc=xr.open_dataset(nc_pth+'GECCO_TEMP_194801_201812.nc')\
-    .loc[dict(Depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10))]
+    .loc[dict(Depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10),lon=slice(300,360))]
 SALT_nc=xr.open_dataset(nc_pth+'GECCO_SALT_194801_201812.nc')\
-    .loc[dict(Depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10))]
+    .loc[dict(Depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10),lon=slice(300,360))]
 
 LON,LAT,DEPTH=TEMP_nc.lon,TEMP_nc.lat,TEMP_nc.temp.Depth
 
@@ -43,14 +43,14 @@ DZ=np.concatenate( ([6], np.diff(DEPTH)) ,axis=0)
 dz=np.tile(np.tile(np.tile(DZ.reshape([DEPTH.shape[0],1]), 70 )\
                    .reshape([DEPTH.shape[0],70,-1]), 360), (TEMP.shape[0],1,1,1) )
 
-OHC_=CP*CT*rho*dz
+OHC=CP*CT*rho
 
 # Integrates from ref depth (2000m) 
-OHC=OHC_.sum(dim='Depth',skipna=False)
-
+# OHC=OHC_.sum(dim='Depth',skipna=False)
+OHC=OHC.mean(dim='lon')
 OHC=OHC.rename('OHC')
 
-OHC.to_netcdf('E:/_data/MyOHC/GECCO_OHC_SO_c14_700m_1980_2018.nc',format='netcdf4')
+OHC.to_netcdf('E:/_data/MyOHC/V_GECCO_OHC_SO_c14_ATL_700m_1980_2023.nc',format='netcdf4')
 
 
 # OHC[-1].plot(cmap=plt.get_1cmap('jet',15),vmin=-1*10**10,vmax=12*10**10,)

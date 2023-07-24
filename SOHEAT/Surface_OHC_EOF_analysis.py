@@ -21,6 +21,8 @@ from matplotlib.ticker import FormatStrFormatter
 NN=10
 pth='D:/HEAT/DATA/'
 ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
+# ncname='EN4_OHC_GLOBAL_c14_700m_1980_2023.nc'
+
 w_path='D:/HEAT/EOF_H/'
 # Dir_pth='EOF_ohc_700m'
 
@@ -164,7 +166,7 @@ i=pcs.values.transpose()[N]
 j=np.arange(1,11)[N]
 n=var.values[N]
 m=var_.values[N]
-t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
 plot_pcs(TIME,TIME2,-i,t_name,'w_path','save_name',fig_bool=False)
 
 mei_2Y=pd.DataFrame({'mei':MEI_index}).rolling(12,center=True).mean()
@@ -176,7 +178,9 @@ normal_i_2Y=i_2Y/np.max(i_2Y)
 normal_i=i/np.max(i)
 
 
-np.corrcoef(normal_mei[6:-63].values.reshape(-1),normal_i[6:].reshape(-1))
+### normal_i   --> 1980-07 ~ 2022-11
+### normal_mei --> 1980-01 ~ 
+np.corrcoef(normal_mei[6:-57].values.reshape(-1),normal_i[:].reshape(-1))
 
 Label_size = 18
 fig, axs = plt.subplots(1,1,figsize=(10,3.7),constrained_layout = True,
@@ -193,7 +197,7 @@ axs.set_xticks(ticks=xtick_location)
 axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
 axs.tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
 axs.tick_params(axis='y', direction='in', length=6, pad=8, labelsize=Label_size-3, width=1., color='k')
-plt.legend(fontsize=16)
+plt.legend(fontsize=16,loc='lower left')
 plt.tight_layout()
 if 0:
     plt.savefig(w_path+Dir_pth+'/ppt/'+save_name,

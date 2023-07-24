@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jul 16 18:37:29 2023
+Created on Mon Jul 24 10:28:38 2023
 
 @author: shjo9
 """
+
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 17 11:40:07 2023
+
+@author: shjo9
+"""
+
+
 import os
 import numpy as np
 import xarray as xr
@@ -18,15 +27,17 @@ from matplotlib.ticker import FormatStrFormatter
 # from eofs.standard import Eof 
 NN=10
 pth='D:/HEAT/DATA/'
-ncname='GECCO_OHC_SO_c14_2000m_1980_2018.nc'
-w_path='D:/HEAT/EOF_H/'
-Dir_pth='EOF_GECCO_ohc_2000m_1Y'
+ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
+ncname='EN4_OHC_GLOBAL_c14_700m_1980_2023.nc'
 
-try:
-    os.mkdir(w_path+Dir_pth)
-    os.mkdir(w_path+Dir_pth+'/ppt')
-except:
-    pass
+w_path='D:/HEAT/EOF_H/'
+# Dir_pth='EOF_ohc_700m'
+
+# try:
+#     os.mkdir(w_path+Dir_pth)
+#     os.mkdir(w_path+Dir_pth+'/ppt')
+# except:
+#     pass
 
 # CMAP=plt.get_cmap('RdYlBu_r',15)
 CNN=14
@@ -40,7 +51,7 @@ CMAP = ListedColormap(Mycmap(
     np.linspace(0, 1, len(My_levels)-1,endpoint=True)) )
 
 OHC = xr.open_dataset(pth+ncname).\
-    loc[dict(time=slice('1980-01','2023-12'),lat=slice(-80,-10))].OHC
+    loc[dict(time=slice('1980-01','2018-12'),lat=slice(-80,-10))].OHC
     
 OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
 
@@ -50,13 +61,38 @@ OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
 # solver=Eof(OHC.OHC,weights=wgts)
 
 solver=Eof(OHC_2Y)
-eofs = -solver.eofs(neofs=NN, eofscaling=0)
-pcs = -solver.pcs(npcs=NN,pcscaling=0)
+eofs = solver.eofs(neofs=NN, eofscaling=0)
+pcs = solver.pcs(npcs=NN,pcscaling=0)
 
-var_=solver.varianceFraction(NN)
+var_=solver.varianceFraction(NN)*100
 var=var_/np.sum(var_)*100
 
-### define  ===================================================================
+def plot_pcs(time,time2,pc,t_name,w_path,save_name,fig_bool=True):
+    Label_size = 18
+    fig, axs = plt.subplots(1,1,figsize=(10,3.7),constrained_layout = True,
+                        dpi=200)
+    f1 = axs.plot(time,pc, label='KINETIC_ENRG',color='k',linewidth=2,zorder=0)
+    axs.set_title(t_name,loc='right',fontdict={'fontsize':20,'fontweight':'regular','fontstyle':'italic'})
+    axs.tick_params(axis='both', labelsize=Label_size)
+    axs.grid(axis='x',linestyle='-.')
+    xtick_location = time[5::12*4]
+    xtick_labels = time2[5::12*4]
+    axs.set_xticks(ticks=xtick_location)
+    axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
+    axs.tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+    axs.tick_params(axis='y', direction='in', length=6, pad=8, labelsize=Label_size-3, width=1., color='k')
+    plt.tight_layout()
+    if fig_bool:
+        plt.savefig(w_path+Dir_pth+'/ppt/'+save_name,
+                facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+        plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
+    plt.show()
+plt.rcParams["font.family"] = 'Arial'
+
+### Plot pcs ==================================================================
+TIME= [str(i)[0:7] for i in pcs.time.values]
+TIME2=[str(i)[2:4] for i in pcs.time.values]
+
 def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=False):
     
     Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
@@ -121,27 +157,82 @@ def plot_pcs(time,time2,pc,t_name,w_path,save_name,fig_bool=True):
                 facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
         plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
     plt.show()
-plt.rcParams["font.family"] = 'Arial'
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+ORI=pd.read_csv('D:/HEAT/Signals/MEI_ori.csv',header=None)
+MEI_index=ORI.values.flatten()
+
+MEI_index[MEI_index<-100]=np.nan
+MEI_index=MEI_index[:-8]
+
+N=1
+i=pcs.values.transpose()[N]
+j=np.arange(1,11)[N]
+n=var.values[N]
+m=var_.values[N]
+t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+plot_pcs(TIME,TIME2,-i,t_name,'w_path','save_name',fig_bool=False)
+
+mei_2Y=pd.DataFrame({'mei':MEI_index}).rolling(12,center=True).mean()
+normal_mei=mei_2Y/np.max(mei_2Y)
+
+i_2Y=pd.DataFrame({'i':i}).rolling(12,center=True).mean()
+normal_i_2Y=i_2Y/np.max(i_2Y)
+
+normal_i=i/np.max(i)
+
+### normal_i   --> 1980-07 ~ 2022-11
+### normal_mei --> 1980-01 ~ 
+
+np.corrcoef(normal_mei[6:-57].values.reshape(-1),normal_i[:].reshape(-1))
+
+Label_size = 18
+fig, axs = plt.subplots(1,1,figsize=(10,3.7),constrained_layout = True,
+                    dpi=200)
+f1 = axs.plot(TIME[:],-normal_i[:], label='pc 3 mode',color='k',linewidth=2,zorder=0)
+f2 = axs.plot(TIME[:],normal_mei[6:-57], label='MEI index',color='r',linewidth=2,zorder=0)
+
+axs.set_title(t_name,loc='right',fontdict={'fontsize':20,'fontweight':'regular','fontstyle':'italic'})
+axs.tick_params(axis='both', labelsize=Label_size)
+axs.grid(axis='x',linestyle='-.')
+xtick_location = TIME[5::12*4]
+xtick_labels = TIME2[5::12*4]
+axs.set_xticks(ticks=xtick_location)
+axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1)
+axs.tick_params(axis='x', direction='in', length=6, pad=8, labelsize=Label_size, labelcolor='k', top=True,width=1.)
+axs.tick_params(axis='y', direction='in', length=6, pad=8, labelsize=Label_size-3, width=1., color='k')
+plt.legend(fontsize=16,loc='lower left')
+plt.tight_layout()
+if 0:
+    plt.savefig(w_path+Dir_pth+'/ppt/'+save_name,
+            facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+    plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
+plt.show()
+
 
 ### Plot eof ==================================================================
-for i,j,n,m in zip(eofs[0:10].values*fac,np.arange(1,11),var.values,var_.values*100):
-    save_name=Dir_pth+'_'+f'{j:02d}'+'mode'
-    t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
-    i[i>Mylim[-1]]=Mylim[-1]
-    i[i<Mylim[0]]=Mylim[0]
-    Plot_SO_Merc3(eofs.lon,eofs.lat,i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=True)
-    Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,w_path,save_name+'_re',fig_bool=True)
+    
+
+    
+N=1
+i=eofs[N].values*fac
+j=np.arange(1,11)[N]
+n=var.values[N]
+m=var_.values[N]
+# t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+i[i>Mylim[-1]]=Mylim[-1]
+i[i<Mylim[0]]=Mylim[0]
+Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,'w_path','save_name',fig_bool=False)
 
 
-### Plot pcs ==================================================================
-TIME= [str(i)[0:7] for i in pcs.time.values]
-TIME2=[str(i)[2:4] for i in pcs.time.values]
 
-for i,j,n,m in zip(pcs.values.transpose(),np.arange(1,11),var.values,var_.values*100):
-    save_name='PC_'+f'{j:02d}'+'mode'
-    t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
-    plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=True)
-    plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name+'_re',fig_bool=True)
+
+
+
 
 
 
