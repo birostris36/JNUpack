@@ -20,7 +20,7 @@ from matplotlib.ticker import FormatStrFormatter
 # from eofs.standard import Eof 
 NN=10
 pth='D:/HEAT/DATA/'
-ncname='EN4_OHC_GLOBAL_c14_700m_1980_2023.nc'
+ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
 w_path='D:/HEAT/EOF_H/'
 # Dir_pth='EOF_ohc_700m'
 
@@ -159,15 +159,13 @@ MEI_index=ORI.values.flatten()
 MEI_index[MEI_index<-100]=np.nan
 MEI_index=MEI_index[:-8]
 
-N=1
+N=2
 i=pcs.values.transpose()[N]
 j=np.arange(1,11)[N]
 n=var.values[N]
 m=var_.values[N]
 t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
 plot_pcs(TIME,TIME2,-i,t_name,'w_path','save_name',fig_bool=False)
-
-
 
 mei_2Y=pd.DataFrame({'mei':MEI_index}).rolling(12,center=True).mean()
 normal_mei=mei_2Y/np.max(mei_2Y)
@@ -178,13 +176,13 @@ normal_i_2Y=i_2Y/np.max(i_2Y)
 normal_i=i/np.max(i)
 
 
-np.corrcoef(normal_mei[6:-5].values.reshape(-1),normal_i.reshape(-1))
+np.corrcoef(normal_mei[6:-63].values.reshape(-1),normal_i[6:].reshape(-1))
 
 Label_size = 18
 fig, axs = plt.subplots(1,1,figsize=(10,3.7),constrained_layout = True,
                     dpi=200)
-f1 = axs.plot(TIME,normal_i, label='pc 3 mode',color='k',linewidth=2,zorder=0)
-f2 = axs.plot(TIME,normal_mei[6:-5], label='MEI index',color='r',linewidth=2,zorder=0)
+f1 = axs.plot(TIME[:],normal_i[:], label='pc 3 mode',color='k',linewidth=2,zorder=0)
+f2 = axs.plot(TIME[:],normal_mei[6:-57], label='MEI index',color='r',linewidth=2,zorder=0)
 
 axs.set_title(t_name,loc='right',fontdict={'fontsize':20,'fontweight':'regular','fontstyle':'italic'})
 axs.tick_params(axis='both', labelsize=Label_size)
@@ -204,16 +202,11 @@ if 0:
 plt.show()
 
 
-
-
-
-
-
 ### Plot eof ==================================================================
     
 
     
-N=3
+N=2
 i=eofs[N].values*fac
 j=np.arange(1,11)[N]
 n=var.values[N]
@@ -222,7 +215,7 @@ m=var_.values[N]
 t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
 i[i>Mylim[-1]]=Mylim[-1]
 i[i<Mylim[0]]=Mylim[0]
-Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,'w_path','save_name',fig_bool=False)
+Plot_SO_Merc3(eofs.lon,eofs.lat,i,t_name,CMAP,Mylim,My_levels,'w_path','save_name',fig_bool=False)
 
 
 

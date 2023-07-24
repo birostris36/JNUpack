@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul 20 09:42:19 2023
+Created on Thu Jul 20 10:47:00 2023
 
 @author: shjo9
 """
+
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -12,37 +13,34 @@ import cartopy.crs as ccrs
 import cartopy.feature as cf
 import matplotlib.path as mpath
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 
-pth='G:/AVISO/madt_h/'
+pth='D:/HEAT/DATA/'
 
+NC=xr.open_dataset(pth+'EN4_OHC_GLOBAL_c14_700m_1980_2023.nc')\
+    .loc[dict(lat=slice(-65,40))].OHC
 
-Sample=xr.open_dataset(pth+'dt_global_allsat_madt_h_y2002_m04.nc')
-
-NC=xr.open_mfdataset(pth+'*.nc').loc[dict(latitude=slice(-65,40),nv=0)].adt
-
-
-NC=NC.assign_coords({'TT':('time',range(len(NC.time)))})
-NC=NC.swap_dims({"time":"TT"})
-NC_s=NC.polyfit(dim='TT',deg=1,skipna=True)
-fit = xr.polyval(NC.TT, NC_s.polyfit_coefficients)
-Coef=NC_s.polyfit_coefficients[0]
-Coef_var=Coef.values*12 # (m/year)
-adt_dt=NC-fit
-adt_dt=adt_dt.swap_dims({"TT":"time"})
-
-adt_dt_2Y=adt_dt.rolling(time=24,center=True).mean()
-
-adt_dt_2Y_=adt_dt_2Y.values
-
-# adt_dt_2Y[10].plot()
+NC_a=NC-NC.mean(dim='time')
 
 
-NAME=[str(i)[:7] for i in adt_dt_2Y.time.values]
+# NC=NC.assign_coords({'TT':('time',range(len(NC.time)))})
+# NC=NC.swap_dims({"time":"TT"})
+# NC_s=NC.polyfit(dim='TT',deg=1,skipna=True)
+# fit = xr.polyval(NC.TT, NC_s.polyfit_coefficients)
+# Coef=NC_s.polyfit_coefficients[0]
+# Coef_var=Coef.values*12 # (m/year)
+# adt_dt=NC-fit
+# adt_dt=adt_dt.swap_dims({"TT":"time"})
 
-lon_m,lat_m=np.meshgrid(adt_dt_2Y.longitude.values,adt_dt_2Y.latitude.values)
+NC_a_2Y=NC_a.rolling(time=24,center=True).mean()
 
+NC_a_2Y_=NC_a_2Y.values
 
-def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,w_path,save_name,fig_bool=False):
+NAME=[str(i)[:7] for i in NC_a_2Y.time.values]
+
+lon_m,lat_m=np.meshgrid(NC_a_2Y.lon.values,NC_a_2Y.lat.values)
+
+def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=False):
     
     Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
     PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
@@ -64,9 +62,9 @@ def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,w_path,save_name,fig_bool=F
     ax.add_feature(cartopy.feature.LAND,color=[.75,.75,.75],zorder=100)
     ax.set_title(t_name,loc='right',fontdict={'fontsize':24,'fontweight':'regular'})
 
-    # M=plt.contourf(lonA,latA,MyDATA,cmap=CMAP,levels=My_levels,transform=PC)
-    M=plt.pcolormesh(lonA, latA, MyDATA,
-                  transform=PC,cmap=CMAP)
+    M=plt.contourf(lonA,latA,MyDATA,cmap=CMAP,levels=My_levels,transform=PC)
+    # M=plt.pcolormesh(lonA, latA, MyDATA,
+    #               transform=PC,cmap=CMAP)
     plt.clim(Mylim[0],Mylim[-1])
     
     # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
@@ -85,24 +83,46 @@ def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,w_path,save_name,fig_bool=F
     if fig_bool:
         plt.savefig(w_path+'/ppt/'+save_name,
                 facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True,dpi=200)
-        plt.savefig(w_path+'/'+save_name,bbox_inches='tight',dpi=200)
+        plt.savefig(w_path+'/'+save_name,dpi=200)
     plt.show()
 
-for i,j in zip(adt_dt_2Y_,NAME):
-    t_name='adt dt2Y '+j
-    s_name='adt_dt2Y_'+j.replace('-','_')
+OHC_cmap=plt.get_cmap('RdYlBu_r',15)
 
-    Plot_SO_Merc3(lon_m,lat_m,i,t_name,plt.get_cmap('RdBu_r',15),[-0.1,0.1],\
-                  'D:/HEAT/tmp/',s_name,fig_bool=True)
+NN=15
+OHC_lim=[-2*10**9,2*10**9]
+# OHC_levels=np.arange(OHC_lim[0],OHC_lim[-1])
+OHC_levels=np.linspace(OHC_lim[0],OHC_lim[-1],NN)
+
+OHC_CMAP = ListedColormap(plt.get_cmap('RdYlBu_r')
+                           (np.linspace(0, 1, NN,endpoint=True)) )
+
+
+for i,j in zip(NC_a_2Y_,NAME):
+    t_name='ohc a2Y '+j
+    s_name='ohc_a2Y_'+j.replace('-','_')
+
+    i[i>OHC_lim[-1]]=OHC_lim[-1]
+    i[i<OHC_lim[0]]=OHC_lim[0]
+    
+    Plot_SO_Merc3(lon_m,lat_m,i,t_name,plt.get_cmap('RdBu_r',15),OHC_lim,OHC_levels,\
+                  'D:/HEAT/tmp2/',s_name,fig_bool=True)
 
 
 
 
-NC=xr.open_mfdataset(pth+'*.nc').loc[dict(latitude=slice(-40,-20),longitude=slice(180,240),nv=0)]\
-    .adt.mean(dim=['latitude','longitude'])
+
+'''
+NC=xr.open_dataset(pth+'EN4_OHC_GLOBAL_c14_700m_1980_2023.nc')\
+    .loc[dict(lat=slice(-40,-20),lon=slice(180,240))].OHC.mean(dim=['lat','lon'])
 
 NC.rolling(time=24,center=True).mean().plot()
-adt_dt_2Y.plot()
+
+'''
+
+
+
+
+
 
 
 

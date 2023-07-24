@@ -18,9 +18,9 @@ from matplotlib.ticker import FormatStrFormatter
 # from eofs.standard import Eof 
 NN=10
 pth='D:/HEAT/DATA/'
-ncname='EN4_OHC_GLOBAL_c14_700m2000m_1980_2023.nc'
+ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
 w_path='D:/HEAT/EOF_H/'
-Dir_pth='EOF_ohc_700m2000m_1Y'
+Dir_pth='EOF_GECCO_ohc_700m_1Y'
 
 try:
     os.mkdir(w_path+Dir_pth)
@@ -50,8 +50,8 @@ OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
 # solver=Eof(OHC.OHC,weights=wgts)
 
 solver=Eof(OHC_2Y)
-eofs = solver.eofs(neofs=NN, eofscaling=0)
-pcs = solver.pcs(npcs=NN,pcscaling=0)
+eofs = -solver.eofs(neofs=NN, eofscaling=0)
+pcs = -solver.pcs(npcs=NN,pcscaling=0)
 
 var_=solver.varianceFraction(NN)
 var=var_/np.sum(var_)*100
@@ -126,10 +126,12 @@ plt.rcParams["font.family"] = 'Arial'
 ### Plot eof ==================================================================
 for i,j,n,m in zip(eofs[0:10].values*fac,np.arange(1,11),var.values,var_.values*100):
     save_name=Dir_pth+'_'+f'{j:02d}'+'mode'
-    t_name='700~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+    t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
     i[i>Mylim[-1]]=Mylim[-1]
     i[i<Mylim[0]]=Mylim[0]
     Plot_SO_Merc3(eofs.lon,eofs.lat,i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=True)
+    Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,w_path,save_name+'_re',fig_bool=True)
+
 
 ### Plot pcs ==================================================================
 TIME= [str(i)[0:7] for i in pcs.time.values]
@@ -137,8 +139,9 @@ TIME2=[str(i)[2:4] for i in pcs.time.values]
 
 for i,j,n,m in zip(pcs.values.transpose(),np.arange(1,11),var.values,var_.values*100):
     save_name='PC_'+f'{j:02d}'+'mode'
-    t_name='700~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+    t_name='~700] '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
     plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=True)
+    plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name+'_re',fig_bool=True)
 
 
 

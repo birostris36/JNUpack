@@ -17,7 +17,7 @@ nc_pth='G:/EN4_22_anal/'
 
 NC = [nc_pth+i for i in os.listdir(nc_pth) if i.endswith('.nc')]
 
-EN4=xr.open_mfdataset(NC).loc[dict(depth=slice(700,2000),time=slice('1980-01','2023-12'),lat=slice(-80,-10))]
+EN4=xr.open_mfdataset(NC).loc[dict(depth=slice(0,700),time=slice('1980-01','2023-12'),lat=slice(-80,-10))]
 
 LON,LAT,DEPTH=EN4.lon,EN4.lat,EN4.depth
 db=EN4.depth_bnds
