@@ -93,7 +93,7 @@ for i,j in zip(adt_dt_2Y_,NAME):
     s_name='adt_dt2Y_'+j.replace('-','_')
 
     Plot_SO_Merc3(lon_m,lat_m,i,t_name,plt.get_cmap('RdBu_r',15),[-0.1,0.1],\
-                  'D:/HEAT/tmp/',s_name,fig_bool=True)
+                  'D:/HEAT/tmp/',s_name,fig_bool=False)
 
 
 

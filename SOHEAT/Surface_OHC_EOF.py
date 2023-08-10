@@ -18,9 +18,9 @@ from matplotlib.ticker import FormatStrFormatter
 # from eofs.standard import Eof 
 NN=10
 pth='D:/HEAT/DATA/'
-ncname='GECCO_OHC_SO_c14_2000m_1980_2018.nc'
+ncname='GECCO_OHC_SO_c14_700m_1980_2018.nc'
 w_path='D:/HEAT/EOF_H/'
-Dir_pth='EOF_GECCO_ohc_2000m_1Y'
+Dir_pth='EOF_GECCO_ohc_700m_1Y'
 
 try:
     os.mkdir(w_path+Dir_pth)
@@ -122,7 +122,7 @@ def plot_pcs(time,time2,pc,t_name,w_path,save_name,fig_bool=True):
         plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
     plt.show()
 plt.rcParams["font.family"] = 'Arial'
-
+'''
 ### Plot eof ==================================================================
 for i,j,n,m in zip(eofs[0:10].values*fac,np.arange(1,11),var.values,var_.values*100):
     save_name=Dir_pth+'_'+f'{j:02d}'+'mode'
@@ -143,7 +143,9 @@ for i,j,n,m in zip(pcs.values.transpose(),np.arange(1,11),var.values,var_.values
     plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=True)
     plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name+'_re',fig_bool=True)
 
+'''
 
+GECCO_700={'eofs':eofs.values,'pcs':pcs.values,'val':var.values,'val_':var_.values}
 
-
+np.save('D:/HEAT/DATA/EOFs/EOF_GECCO_700m.npy',GECCO_700)
 

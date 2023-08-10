@@ -7,10 +7,8 @@ Created on Mon Jul 24 11:46:09 2023
 
 import xarray as xr
 
-
 pth1='D:/HEAT/DATA/'
 pth2='E:/_data/MyOHC/'
-
 
 GECCO_OHC_700=xr.open_dataset(pth2+'GECCO_OHC_SO_c14_700m_1980_2018.nc')\
     .loc[dict(lat=slice(-70,-50),lon=slice(180,270),time=slice('1980-01','2018-12') )].mean(dim=['lat','lon']).OHC

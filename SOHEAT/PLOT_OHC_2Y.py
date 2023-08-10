@@ -4,7 +4,8 @@ Created on Thu Jul 20 10:47:00 2023
 
 @author: shjo9
 """
-
+import matplotlib
+matplotlib.use('agg')
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -17,7 +18,11 @@ from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 
 pth='D:/HEAT/DATA/'
 
-NC=xr.open_dataset(pth+'EN4_OHC_GLOBAL_c14_700m_1980_2023.nc')\
+#NC=xr.open_dataset(pth+'EN4_OHC_GLOBAL_c14_700m_1980_2023.nc')\
+#    .loc[dict(lat=slice(-65,40))].OHC
+
+
+NC=xr.open_dataset(pth+'GECCO_OHC_SO_c14_700m_1980_2018.nc')\
     .loc[dict(lat=slice(-65,40))].OHC
 
 NC_a=NC-NC.mean(dim='time')
@@ -105,7 +110,7 @@ for i,j in zip(NC_a_2Y_,NAME):
     i[i<OHC_lim[0]]=OHC_lim[0]
     
     Plot_SO_Merc3(lon_m,lat_m,i,t_name,plt.get_cmap('RdBu_r',15),OHC_lim,OHC_levels,\
-                  'D:/HEAT/tmp2/',s_name,fig_bool=True)
+                  'D:/HEAT/tmp3/',s_name,fig_bool=True)
 
 
 
