@@ -5,13 +5,6 @@ Created on Mon Jul 24 10:28:38 2023
 @author: shjo9
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 17 11:40:07 2023
-
-@author: shjo9
-"""
-
 
 import os
 import numpy as np
@@ -137,6 +130,7 @@ def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,
                 facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
         plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
     plt.show()
+    
 def plot_pcs(time,time2,pc,t_name,w_path,save_name,fig_bool=True):
     Label_size = 18
     fig, axs = plt.subplots(1,1,figsize=(10,3.7),constrained_layout = True,
