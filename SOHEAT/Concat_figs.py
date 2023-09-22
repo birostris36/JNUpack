@@ -20,31 +20,31 @@ Description :
 import os
 import cv2
 import pandas as pd
-from tqdm import tqdm
+# from tqdm import tqdm
 import numpy as np
 
-save_path='D:/HEAT/figs/Concat/'
+save_path='E:/_tmp/RMnT/Concat_GECOHC_ADT/'
 
-image_path01='D:/HEAT/figs/adt/ppt/'
-image_path02='D:/HEAT/figs/ohc/ppt/'
-image_path03='D:/HEAT/figs/Pair/ppt/'
+image_path01='E:/_tmp/RMnT/GECOHC/'
+image_path02='E:/_tmp/RMnT/SLA_dt/'
+# image_path03='D:/HEAT/figs/Pair/ppt/'
 
 IMAGES01=list(np.sort([image_path01+i for i in os.listdir(image_path01) if i.endswith('.png')]))
 IMAGES02=list(np.sort([image_path02+i for i in os.listdir(image_path02) if i.endswith('.png')]))
-IMAGES03=list(np.sort([image_path03+i for i in os.listdir(image_path03) if i.endswith('.png')]))
+# IMAGES03=list(np.sort([image_path03+i for i in os.listdir(image_path03) if i.endswith('.png')]))
 
 # IMAGES01=IMAGES01[1:]
 # DATES=pd.date_range('1980-02','2015-12',freq='m').strftime('%Y_%m')
 DATES=range(1,len(IMAGES02)+1)
 
-for i,j,k,d in tqdm(zip(IMAGES01,IMAGES02,IMAGES03,DATES)):
+for i,j,d in zip(IMAGES01,IMAGES02,DATES):
     # Open the first image
     img1 = cv2.imread(i)
     # Open the second image
     img2 = cv2.imread(j)
-    img3 = cv2.imread(k)
+    # img3 = cv2.imread(k)
     # Concatenate the images horizontally
-    result = cv2.hconcat([img1,img2,img3])
+    result = cv2.hconcat([img1,img2])
     #concatenated_image = np.vstack((img1, img2))
     # Display the concatenated image
     cv2.imwrite(save_path+f'{d:02d}'+'.png', result)

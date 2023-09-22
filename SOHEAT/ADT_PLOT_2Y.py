@@ -20,7 +20,6 @@ Sample=xr.open_dataset(pth+'dt_global_allsat_madt_h_y2002_m04.nc')
 
 NC=xr.open_mfdataset(pth+'*.nc').loc[dict(latitude=slice(-65,40),nv=0)].adt
 
-
 NC=NC.assign_coords({'TT':('time',range(len(NC.time)))})
 NC=NC.swap_dims({"time":"TT"})
 NC_s=NC.polyfit(dim='TT',deg=1,skipna=True)
