@@ -6,6 +6,8 @@ Created on Sun Jul 16 18:37:29 2023
 """
 import matplotlib
 matplotlib.use('agg')
+import sys
+sys.path.append('C:/Users/shjo/Bridge/JNUpack/SO/libs/')
 import os
 import numpy as np
 import xarray as xr
@@ -13,20 +15,21 @@ from eofs.xarray import Eof
 import matplotlib.pyplot as plt
 import cartopy
 import cartopy.crs as ccrs
+from myPlot import  figmaster,myClrbr
 import cartopy.feature as cf
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.ticker import FormatStrFormatter
 # from eofs.standard import Eof 
 NN=10
-pth='D:/HEAT/DATA/'
+pth='J:/MDLS_OBS_OHC/Area_data/'
 #ncname='GECCO_OHC_SO_c14_2000m_1980_2018.nc'
-w_path='D:/HEAT/EOF_H/'
-Dir_pth='EOF_IAP_ohc_2000m_1Y'
+wpth='J:/MDLS_OBS_OHC/Area_data/tmp2/'
+Dir_pth='EOF_IAP_ohc700m_1Y'
 
 try:
-    os.mkdir(w_path+Dir_pth)
-    os.mkdir(w_path+Dir_pth+'/ppt')
+    os.mkdir(wpth+Dir_pth)
+    os.mkdir(wpth+Dir_pth+'/ppt')
 except:
     pass
 
@@ -41,21 +44,34 @@ Mycmap = LinearSegmentedColormap.from_list('',Mycolorlist,N=256)
 CMAP = ListedColormap(Mycmap(
     np.linspace(0, 1, len(My_levels)-1,endpoint=True)) )
 
-OHC = xr.open_mfdataset('D:/HEAT/DATA/IAP_OHC_SO_2000m_1980_2023.nc').OHC2000
+OHC = xr.open_mfdataset(pth+'myIAP_198001_201812_tshuv.nc').OHC700.loc[dict(lat=slice(-80,-10))]
     
-#OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
+OHC_2Y=OHC.rolling(time=12,center=True).mean()[6:-5]
+lonR,latR=np.meshgrid(OHC_2Y.lon.values,OHC_2Y.lat.values)
 
 #lon_m,lat_m=np.meshgrid(OHC.lon,OHC.lat)
 # coslat=np.cos(np.deg2rad(lat_m)) 
 # wgts=np.sqrt(coslat)[:,np.newaxis] 
 # solver=Eof(OHC.OHC,weights=wgts)
 
-solver=Eof(OHC)
+solver=Eof(OHC_2Y)
 eofs = -solver.eofs(neofs=NN, eofscaling=0)
 pcs = -solver.pcs(npcs=NN,pcscaling=0)
 
 var_=solver.varianceFraction(NN)
 var=var_/np.sum(var_)*100
+
+mySetting={
+    'figsize': '',
+    'mylabel': '',
+    'Label_size':18,
+    'title_loc':'right',
+    'fontParams':'Arial',
+    'wpth':wpth}
+
+### Figure ==============================================================
+print('!!!   figure   !!!')
+F=figmaster(mySetting)
 
 ### define  ===================================================================
 def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=False):
@@ -63,11 +79,13 @@ def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,
     Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
     PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
     MERC=ccrs.Mercator(central_longitude=180.0,globe=None)
+    PC180 = ccrs.PlateCarree(central_longitude=180.0,globe=None)
+
     
     # Now we will create axes object having specific projection 
 
     fig, ax = plt.subplots(1, 1, figsize=(12.5,6),
-                       subplot_kw={'projection': MERC},dpi=200)
+                       subplot_kw={'projection': PC180},dpi=200)
     gl = ax.gridlines(crs=PC, draw_labels=True,y_inline=False,x_inline=False,
                       linewidth=.6, color='k', alpha=0.45, linestyle='-.',\
                           )
@@ -85,7 +103,7 @@ def Plot_SO_Merc3(lonA,latA,MyDATA,t_name,CMAP,Mylim,My_levels,w_path,save_name,
     plt.clim(Mylim[0],Mylim[-1])
     
     # crs is PlateCarree -> we are explicitly telling axes, that we are creating bounds that are in degrees
- #   ax.set_extent([0, 360, -80, -24], crs=PC)
+    ax.set_extent([0, 360, -80, -10], crs=PC)
     ax.tick_params(axis='both', which='major', labelsize=28)
 
     divider = make_axes_locatable(ax)
@@ -123,29 +141,28 @@ def plot_pcs(time,time2,pc,t_name,w_path,save_name,fig_bool=True):
         plt.savefig(w_path+Dir_pth+'/'+save_name,bbox_inches='tight')
     plt.show()
 plt.rcParams["font.family"] = 'Arial'
-'''
 ### Plot eof ==================================================================
 for i,j,n,m in zip(eofs[0:10].values*fac,np.arange(1,11),var.values,var_.values*100):
     save_name=Dir_pth+'_'+f'{j:02d}'+'mode'
-    t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
-    i[i>Mylim[-1]]=Mylim[-1]
-    i[i<Mylim[0]]=Mylim[0]
-    Plot_SO_Merc3(eofs.lon,eofs.lat,i,t_name,CMAP,Mylim,My_levels,w_path,save_name,fig_bool=True)
-    Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,w_path,save_name+'_re',fig_bool=True)
-
-
+    t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+    # i[i>Mylim[-1]]=Mylim[-1]
+    # i[i<Mylim[0]]=Mylim[0]
+    # Plot_SO_Merc3(eofs.lon,eofs.lat,i,t_name,CMAP,Mylim,My_levels,wpth,save_name,fig_bool=True)
+    # Plot_SO_Merc3(eofs.lon,eofs.lat,-i,t_name,CMAP,Mylim,My_levels,wpth,save_name+'_re',fig_bool=True)
+    
+    F.myCrtpy_sph(latR,lonR,i,CMAP,My_levels,save_name)
+    F.myCrtpy_sph(latR,lonR,-i,CMAP,My_levels,save_name+'_re')
 ### Plot pcs ==================================================================
 TIME= [str(i)[0:7] for i in pcs.time.values]
 TIME2=[str(i)[2:4] for i in pcs.time.values]
-
+w_path=wpth
 for i,j,n,m in zip(pcs.values.transpose(),np.arange(1,11),var.values,var_.values*100):
     save_name='PC_'+f'{j:02d}'+'mode'
-    t_name='~2000m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
+    t_name='~700m '+f'{j:02d}'+' mode '+f'{n:.1f}'+'% ('+f'{m:.1f}'+'%)'
     plot_pcs(TIME,TIME2,i,t_name,w_path,save_name,fig_bool=True)
     plot_pcs(TIME,TIME2,-i,t_name,w_path,save_name+'_re',fig_bool=True)
-'''
-IPA_2000={'eofs':eofs.values,'pcs':pcs.values,'val':var.values,'val_':var_.values}
+# IPA_2000={'eofs':eofs.values,'pcs':pcs.values,'val':var.values,'val_':var_.values}
 
-np.save('D:/HEAT/DATA/EOFs/EOF_IAP_2000m.npy',IPA_2000)
+# np.save('D:/HEAT/DATA/EOFs/EOF_IAP_2000m.npy',IPA_2000)
 
 

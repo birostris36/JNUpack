@@ -7,7 +7,6 @@ import xarray as xr
 import os
 
 
-
 def myfitting(x,y,deg=1):
     '''
     x,y --> 1d numpy.array
@@ -31,9 +30,9 @@ def myXfitting2d(Xdata):
     Coef_var=Coef.values*12 # (m/year)
     data_dt=NC-fit
     data_dt=data_dt.swap_dims({"TT":"time"})
-    return data_dt, Coef_var
+    return data_dt, Coef
 
-def myfitting2d(data3d)
+def myfitting2d(data3d):
     '''
     Inputs --> data3d (time, lat,lon)
     '''
@@ -50,18 +49,69 @@ def myfitting2d(data3d)
                 fit[i,j]=a
     return fit
 
+def myfitting2d_sttcs(data3d,threshold=0.05):
+    '''
+    Inputs --> data3d (time, lat,lon)
+    '''
+    # calculate interval manually using the formula
+    T,A,O=data3d.shape
+    y=np.arange(T)
+    slope=np.zeros([A,O])
+    intercept,r_value,p_value,std_err,Smask=\
+        np.zeros_like(slope),np.zeros_like(slope),np.zeros_like(slope),\
+            np.zeros_like(slope),np.zeros_like(slope)
+    for i in range(A):
+        for j in range(O):
+            if np.mean(data3d[:,i,j])!=np.mean(data3d[:,i,j]):
+                slope[i,j],intercept[i,j],r_value[i,j],p_value[i,j],std_err[i,j],Smask[i,j]=\
+                    np.nan,np.nan,np.nan,np.nan,np.nan,np.nan
+            else:
+                slope[i,j], intercept[i,j], r_value[i,j], p_value[i,j], std_err[i,j]=\
+                    linregress(y,data3d[:,i,j])
+                if p_value[i,j]<=threshold or p_value[i,j]>=1-threshold:
+                    Smask[i,j]=0
+                else:
+                    Smask[i,j]=np.nan
 
+    return slope, intercept, r_value, p_value, std_err, Smask
+
+def myfitting1d_sttcs(data2d,threshold=0.05):
+    '''
+    Inputs --> data3d (time, lat,lon)
+    '''
+    # calculate interval manually using the formula
+    T,A=data2d.shape
+    y=np.arange(T)
+    slope=np.zeros([A])
+    intercept,r_value,p_value,std_err,Smask=\
+        np.zeros_like(slope),np.zeros_like(slope),np.zeros_like(slope),\
+            np.zeros_like(slope),np.zeros_like(slope)
+    for i in range(A):
+        if np.mean(data2d[:,i])!=np.mean(data2d[:,i]):
+            slope[i],intercept[i],r_value[i],p_value[i],std_err[i],Smask[i]=\
+                np.nan,np.nan,np.nan,np.nan,np.nan,np.nan
+        else:
+            slope[i], intercept[i], r_value[i], p_value[i], std_err[i]=\
+                linregress(y,data2d[:,i])
+            # print(p_value)
+            if p_value[i]<=threshold or p_value[i]>=1-threshold:
+                Smask[i]=0
+            else:
+                Smask[i]=np.nan
+
+    return slope, intercept, r_value, p_value, std_err, Smask
+
+'''
 
 import seaborn as sns
 fig, ax = plt.subplots()
+
 
 # plot manually calculated interval (std interval) --- the blue one
 ax.plot(x, y_est, '-')
 ax.fill_between(x, y_est - y_err, y_est + y_err, alpha=0.2,color='r')
 
-# plot seaborn calculated interval (std interval, i.e. when ci=68.27) --- the orange one
-# sns.regplot(x=x, y=y, ci=68.27)
 plt.show()
 
-
+'''
         
