@@ -22,7 +22,6 @@ fig_bool=1
 
 myName='Zonal mean '+varnm+' trend'
 
-
 ### Preparation ============================================================
 wpth=wpth+varnm+'_'+str(t_rng[0])+'_'+str(t_rng[-1])+'/'
 try :

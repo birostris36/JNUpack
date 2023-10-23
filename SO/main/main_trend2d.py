@@ -39,7 +39,7 @@ for i in myDATA:
         mySST = tmp.sst.loc[dict(lat=slice(lat_rng[0],lat_rng[-1])\
             ,time=slice(time_rng[0],time_rng[-1]))]
     else:
-        mySST = tmp.temp.loc[dict(depth=slice(0,10),lat=slice(lat_rng[0],lat_rng[-1])\
+        mySST = tmp.temp.loc[dict(depth=slice(0,700),lat=slice(lat_rng[0],lat_rng[-1])\
             ,time=slice(time_rng[0],time_rng[-1]))].mean(dim='depth')
     mySST=mySST.where(mySST<1000)
     lonR,latR=mySST.lon.values,mySST.lat.values
@@ -55,7 +55,7 @@ for i in myDATA:
 
     ### Figure configs =======================================================
     myN=16
-    sstTlim=[-0.5,0.5]
+    sstTlim=[-0.1,0.1]
     CMAP,mylevel=myClrbr('myblc2',sstTlim,myN)
 
     CoefD[CoefD<sstTlim[0]]=sstTlim[0]

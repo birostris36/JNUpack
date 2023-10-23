@@ -54,7 +54,7 @@ plt.rcParams["font.family"] = 'Arial'
 print('!!! Open files !!!')
 myEofs,myNm,myLat,myLon=[],[],[],[]
 myPcs,myVar,myVar2=[],[],[]
-lat_rng=[-80,30]; lon_rng=[0,360]; time_rng=[str(t_rng[0])+'-01',str(t_rng[-1])+'-12']
+lat_rng=[-80,-10]; lon_rng=[0,360]; time_rng=[str(t_rng[0])+'-01',str(t_rng[-1])+'-12']
 
  
 print('!!! Open: '+myDATA_list[0]+' !!!')
@@ -75,7 +75,7 @@ OHC_1Y=myDATA.rolling(time=12,center=True).mean()[6:-5]
 ### EOFs ==================================================================
 NN=10
 
-solver=Eof(OHC_1Y)
+solver=Eof(myDATA)
 eofs = -solver.eofs(neofs=NN, eofscaling=0)
 pcs = -solver.pcs(npcs=NN,pcscaling=0)
 var_=solver.varianceFraction(NN)*100

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.use('agg')
 
-pth='C:/Users/shjo/OneDrive/mySO/SCP_EEMD/OHC700_1993_2020_230E250E_60S50S/EEMD_results/'
-wpth='C:/Users/shjo/OneDrive/mySO/SCP_EEMD/OHC700_1993_2020_230E250E_60S50S/'
+pth='C:/Users/shjo/OneDrive/mySO/SCP_EEMD/OHC700_1993_2020_220E260E_60S50S/EEMD_results/'
+wpth='C:/Users/shjo/OneDrive/mySO/SCP_EEMD/OHC700_1993_2020_220E260E_60S50S/'
 
 eemd_lst=[i for i in os.listdir(pth) if i.endswith('.mat')]
 
