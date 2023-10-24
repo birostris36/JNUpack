@@ -21,17 +21,17 @@ mpl.use('agg')
 pthMO='J:/tmp_proc/Models/'
 pthrn='J:/tmp_proc/Obs/'
 
-varnm='temp'
-myindx='SAM'
+varnm='u'
+myindx='SOI'
 
 t_rng=['1993-01', '2017-12']
-lat_rng=[-80,-30]; lon_rng=[0,360]
+lat_rng=[-85,-68]; lon_rng=[160,300]
 
-wpth='C:/Users/shjo/OneDrive/mySO/Regression_H/tmp/'+myindx+'/'
+wpth='C:/Users/shjo/OneDrive/mySO/Regress_WC/'+myindx+'/'
 mySig_npth='C:/Users/shjo/OneDrive/mySO/mySignals/my'+myindx+'.pkl'
 
 ### Preparation ============================================================
-wpth=wpth+'WCssn_'+varnm+'500m_'+str(t_rng[0][:4])+'_'+str(t_rng[-1][:4])+'_'+\
+wpth=wpth+'WCssn_'+varnm+'100m_'+str(t_rng[0][:4])+'_'+str(t_rng[-1][:4])+'_'+\
     str(lat_rng[0])+'S'+str(lat_rng[-1])+'S'+'_'+\
         'E'+str(lon_rng[-1])+'E/'
 wpth=wpth.replace('-','')
@@ -42,12 +42,14 @@ except:
 loc=sys._getframe().f_code.co_filename
 myInfo(loc,wpth)
 
-myRnly=[pthrn+i for i in os.listdir(pthrn) if i.endswith('.nc')]
-myMDOB=[pthMO+i for i in os.listdir(pthMO) if i.endswith('.nc')]
+myRnly=[pthrn+i for i in os.listdir(pthrn) if i.endswith('uv.nc')]
+myMDOB=[pthMO+i for i in os.listdir(pthMO) if i.endswith('uv.nc')]
 myDATA=myMDOB+myRnly
 if int(t_rng[0].split('-')[0])<1992:
     myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myECCO')]
 myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myISA')]
+
+
 
 ### load Index ==================================================================
 with open(mySig_npth, 'rb') as f:
@@ -72,7 +74,7 @@ for i in myDATA:
     tmp=xr.open_dataset(i)
     if len(tmp.coords)==4:
         mydata = tmp[varnm].loc[dict(lat=slice(lat_rng[0],lat_rng[-1])\
-            ,time=slice(t_rng[0],t_rng[-1]),depth=slice(450,550))].mean(dim='depth')
+            ,time=slice(t_rng[0],t_rng[-1]),depth=slice(80,120))].mean(dim='depth')
   
     mydata=mydata.where(mydata<1000)
     mydata=mydata.where(mydata>-1000)
@@ -82,9 +84,9 @@ for i in myDATA:
     lonR,latR=mydata.lon.values,mydata.lat.values
     lonR_m,latR_m=np.meshgrid(lonR,latR)
     time=mydata.time.values
-    dta_nm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+'500m regression ('+myindx+')\n'+\
+    dta_nm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+'100m regression ('+myindx+')\n'+\
         'QQQ'+str(lon_rng[0])+'~'+str(lon_rng[-1])+'E '+str(time[0])[:4]+' '+str(time[-1])[:4]
-    dta_snm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+'500m regression '+myindx+'_'+\
+    dta_snm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+'100m regression '+myindx+'_'+\
         str(lat_rng[0])+'S'+str(lat_rng[-1])+'S'+' '+str(lon_rng[0])+'E'+str(lon_rng[-1])+'E_'+\
             str(time[0])[:4]+' '+str(time[-1])[:4]
     
@@ -118,7 +120,7 @@ for i in myDATA:
     
     # Figure
     myN=16
-    mylim=[-.2,.2]
+    mylim=[-.05,.05]
     CMAP,mylevel=myClrbr('myblc2',mylim,myN)
     CMAP_salt,mylevel_salt=myClrbr('salt',mylim,myN)
     CMAP_temp,mylevel_temp=myClrbr('balance',mylim,myN)
@@ -140,8 +142,8 @@ for i in myDATA:
     lat_rng_,lon_rng_=[-60,-53],[200,250]
 
     F=figmaster(mySetting)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Wrm,smask_Wrm,CMAP,mylevel,dta_nm.replace('QQQ','Wrm '),\
+    F.myCrtpy_sph3_box(latR_m,lonR_m,slope_Wrm*10,smask_Wrm,CMAP_temp,mylevel,dta_nm.replace('QQQ','Wrm '),\
         'Wrm_'+dta_snm,lat_rng_,lon_rng_)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Cld,smask_Cld,CMAP,mylevel,dta_nm.replace('QQQ','Cld '),\
+    F.myCrtpy_sph3_box(latR_m,lonR_m,slope_Cld*10,smask_Cld,CMAP_temp,mylevel,dta_nm.replace('QQQ','Cld '),\
         'Cld_'+dta_snm,lat_rng_,lon_rng_)
 

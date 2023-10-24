@@ -8,7 +8,7 @@ ECCO_vel_pth='/data4/tmp/VEL/'
 
 wnpth='./myECCO_199201_201712_tsuvw.nc'
 
-t_rng=['1980-01','2020-12']
+t_rng=['1980-01','2022-12']
 My_time_ref='days since 1970-1-1 00:00:00'
 
 ### Read ECCO data ===============================

@@ -129,6 +129,37 @@ class figmaster:
             plt.savefig(w_path+'/'+s_name,bbox_inches='tight')
         plt.show()
         
+    def myCrtpy_cyl_pcolor(self,LAT,LON,DATA,CMAP):
+        PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
+        PC180 = ccrs.PlateCarree(central_longitude=180.0,globe=None)
+        fig, ax = plt.subplots(1, 1, figsize=(12.5,6),
+                            subplot_kw={'projection': PC180},dpi=200)
+        gl = ax.gridlines(crs=PC, draw_labels=True,y_inline=False,x_inline=False,
+                            linewidth=.6, color='k', alpha=0.45, linestyle='-.')
+        gl.xlabels_top,gl.ylabels_right = False,False
+        gl.xlabel_style = gl.ylabel_style = {"size" : 20}
+        ax.add_feature(cf.COASTLINE.with_scale("110m"), lw=1,zorder=110)
+        ax.add_feature(cf.LAND,color=[.75,.75,.75],zorder=100)
+        # ax.set_title(self.ttl[0],loc=self.ttl[-1],fontdict={'fontsize':32,'fontweight':'regular'})
+
+        M=plt.pcolor(LON,LAT,DATA,cmap=CMAP,transform=PC,vmin=-0.15,vmax=0.15)
+
+        ax.set_extent([LON[0][0], LON[0][-1], LAT[0][0], LAT[-1][0]], crs=PC)
+        ax.tick_params(axis='both', which='major', labelsize=28)
+        divider = make_axes_locatable(ax)
+        ax_cb = divider.new_horizontal(size="5%", pad=.1, axes_class=plt.Axes)
+        fig.add_axes(ax_cb)
+        cb=plt.colorbar(M,extend='both',pad=0.01,cax=ax_cb)
+        cb.set_label(label='', weight='regular',fontsize=24)
+        cb.ax.tick_params(labelsize=19)
+        # cb.ax.yaxis.set_major_formatter(FormatStrFormatter(FMT))
+        plt.tight_layout()
+        if 0:
+            # plt.savefig(w_path+'/ppt/'+s_name,
+            #         facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+            plt.savefig(w_path+'/'+s_name,bbox_inches='tight')
+        plt.show()
+        
     
     # Now we will create axes object having specific projection 
     def myCrtpy_sph_pcolor(self,LAT,LON,DATA,CMAP,myName):
@@ -154,7 +185,7 @@ class figmaster:
         # M=plt.contourf(LON,LAT,DATA,cmap=CMAP,levels=LEVELS,transform=PC)
         # M=plt.contourf(LON,LAT,DATA,cmap=CMAP,transform=PC,vmin=-3.5,vmax=3.5)
 
-        M=plt.pcolormesh(LON,LAT,DATA,cmap=CMAP,transform=PC,vmin=-3.5,vmax=3.5)
+        M=plt.pcolormesh(LON,LAT,DATA,cmap=CMAP,transform=PC)
 
         ax.set_extent([LON[0][0], LON[0][-1], LAT[0][0], LAT[-1][0]], crs=PC)
         
@@ -299,8 +330,8 @@ class figmaster:
         ax.plot(g,h,transform=PC,color='k',linestyle='--',linewidth=2.5,zorder=200)
         
         plt.contourf(LON,LAT,HATCH,levels=LEVELS,colors='none',hatches='.',transform=PC,zorder=2,extend='both')
-        # M=plt.contourf(LON,LAT,DATA,cmap=CMAP,levels=LEVELS,transform=PC,zorder=0,extend='both')
-        M=plt.contourf(LON,LAT,DATA,cmap=CMAP,transform=PC,zorder=0,extend='both')
+        M=plt.contourf(LON,LAT,DATA,cmap=CMAP,levels=LEVELS,transform=PC,zorder=0,extend='both')
+        # M=plt.contourf(LON,LAT,DATA,cmap=CMAP,transform=PC,zorder=0,extend='both')
 
         ax.set_extent([LON[0][0], LON[0][-1], LAT[0][0], LAT[-1][0]], crs=PC)
         

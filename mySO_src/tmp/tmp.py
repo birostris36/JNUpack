@@ -21,8 +21,8 @@ mpl.use('agg')
 pthMO='J:/tmp_proc/Models/'
 pthrn='J:/tmp_proc/Obs/'
 
-varnm='salt'
-myindx='SAM'
+varnm='temp'
+myindx='MEI'
 
 t_rng=['1993-01', '2017-12']
 lat_rng=[-80,-30]; lon_rng=[0,360]
@@ -64,7 +64,7 @@ myIdx_Cld=myIdx[ (myIdx.index.month==3)|(myIdx.index.month==4)|(myIdx.index.mont
     (myIdx.index.month==6)|(myIdx.index.month==7)|(myIdx.index.month==8)].resample('1Y').mean().values.reshape(-1)
 myIdx_Wrm=myIdx[ (myIdx.index.month==10)|(myIdx.index.month==11)|(myIdx.index.month==12)|\
     (myIdx.index.month==1)|(myIdx.index.month==2)][2:]
-myIdx_Wrm=np.array([myIdx_Wrm[myindx][5*n:5*n+5].mean() for n in range(int(len(myIdx_Wrm)/5))])
+myIdx_Wrm=np.array([myIdx_Wrm[myindx+'v2'][5*n:5*n+5].mean() for n in range(int(len(myIdx_Wrm)/5))])
 
 
 
@@ -108,7 +108,6 @@ for i in myDATA:
     # Wrm_ssn=Wrm_ssn_.groupby('time.year').mean()
     Cld_ssn=Cld_ssn_.groupby('time.year').mean()
 
-
     # Linear regressiong
     slope_Wrm,intercept_Wrm,r_value_Wrm,p_value_Wrm,std_err_Wrm,smask_Wrm=\
         myRegress3d_sttcs(myIdx_Wrm,Wrm_ssn,threshold=0.05)
@@ -142,8 +141,8 @@ for i in myDATA:
     lat_rng_,lon_rng_=[-60,-53],[200,250]
 
     F=figmaster(mySetting)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Wrm*10,smask_Wrm,CMAP_salt,mylevel,dta_nm.replace('QQQ','Wrm '),\
+    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Wrm,smask_Wrm,CMAP,mylevel,dta_nm.replace('QQQ','Wrm '),\
         'Wrm_'+dta_snm,lat_rng_,lon_rng_)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Cld*10,smask_Cld,CMAP_salt,mylevel,dta_nm.replace('QQQ','Cld '),\
+    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Cld,smask_Cld,CMAP,mylevel,dta_nm.replace('QQQ','Cld '),\
         'Cld_'+dta_snm,lat_rng_,lon_rng_)
 
