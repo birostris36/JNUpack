@@ -5,6 +5,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import sys
 import matplotlib as mpl
 from scipy.interpolate import griddata 
+import gsw.density as gsw_d
+import gsw.conversions as gsw_c
 import warnings
 import os
 import numpy as np
@@ -17,24 +19,27 @@ import matplotlib as mpl
 mpl.use('agg')
 
 ### ======================================================================
-npth='J:/Reanalysis/myOISST_198001_202212_sst.nc'
 
-myEEMD_pth='C:/Users/shjo/OneDrive/mySO/EEMD_sigs/OHC700_1993_2020_200E250E_60S53S/Figs/'
+pthmd='J:/tmp_proc/Models/'
+pthob='J:/tmp_proc/Obs/'
 
-wpth='C:/Users/shjo/OneDrive/mySO/Regression_H/'
+myEEMD_pth='C:/Users/shjo/OneDrive/mySO01/SCP_EEMD/OHC700_1993_2020_225E255E_65S45S/Figs/'
 
-ModeN=4
-varnm='ice'
+wpth='C:/Users/shjo/OneDrive/mySO/Sections/Regression_IMFs/'
+
+ModeN=5
+vrnm='salt'
 t_rng=['1993-01', '2017-12']
-lat_rng=[-75,-30]; lon_rng=[0,360]
+d_rng=[0,2000]
+lat_rng=[-75,-30]; lon_rng=[230,250]
 
 ### =======================================================================
 with open(myEEMD_pth+'EEMD_'+f'{ModeN:02d}'+'_mode.pickle', 'rb') as f:
     data = pickle.load(f)
-Esig9317=data.mean(axis=1).loc[t_rng[0]:t_rng[-1]].values[6:-5]
+Esig9317=data.mean(axis=1).loc[t_rng[0]:t_rng[-1]].values
 
 ### Preparation ============================================================
-wpth=wpth+varnm+'_'+str(t_rng[0][:4])+'_'+str(t_rng[-1][:4])+'_'+\
+wpth=wpth+vrnm+'_'+str(t_rng[0][:4])+'_'+str(t_rng[-1][:4])+'_'+\
     str(lat_rng[0])+'S'+str(lat_rng[-1])+'S'+'_'+str(lon_rng[0])+\
         'E'+str(lon_rng[-1])+'E'+'_'+f'{ModeN:02d}'+'mode'+'/'
 wpth=wpth.replace('-','')
@@ -45,83 +50,83 @@ except:
 loc=sys._getframe().f_code.co_filename
 myInfo(loc,wpth)
 
-myDATA=[npth]
+myMdls=[pthmd+i for i in os.listdir(pthmd) if i.endswith('.nc')]
+myObsv=[pthob+i for i in os.listdir(pthob) if i.endswith('.nc')]
 
-# myRnly=[pthrn+i for i in os.listdir(pthrn) if i.endswith('.nc')]
-# myMDOB=[pthMO+i for i in os.listdir(pthMO) if i.endswith('.nc')]
-# myDATA=myMDOB+myRnly
-# if int(t_rng[0].split('-')[0])<1992:
-#     myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myECCO')]
+myDATA=myMdls+myObsv
+
+if int(t_rng[0][:4])<1992:
+    myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myECCO')]
+    myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myARMOR3D')]
+myDATA=[i for i in myDATA if not i.split('/')[-1].startswith('myISAS')]
+
+### ========================================================================
+myN=20
+temp_lim=[-2.,18]
+salt_lim=[33.5,35]
+mydepth=[-250, -500, -1000, -1500,-2000]
+# mydepth=[-250, -500, -800]
+
+mylevels2=[26.5,27,27.2,27.5,27.7,27.8]
 
 ### Read Data ==============================================================
-for i in myDATA: 
+for i in myDATA:
     print('!!! Open: '+i+' !!!')
     tmp=xr.open_dataset(i)
-    if len(tmp.coords)==3:
-        mydata = tmp[varnm].loc[dict(lat=slice(lat_rng[0],lat_rng[-1])\
-            ,time=slice(t_rng[0],t_rng[-1]))]
 
-    mydata=mydata.where(mydata<1000)
+    mydata = tmp.loc[dict(lat=slice(lat_rng[0],lat_rng[-1]),lon=slice(lon_rng[0],lon_rng[-1])\
+        ,time=slice(t_rng[0],t_rng[-1]),depth=slice(d_rng[0],d_rng[-1]))]
+    mydata=mydata.where(mydata<10**30)
+    mydata=mydata.mean(dim='lon',skipna=True)
     
-    mydata=mydata.fillna(0)
+    temp_=mydata['temp'].mean(dim='time').squeeze()
+    salt_=mydata['salt'].mean(dim='time').squeeze()
+    CT=gsw_c.CT_from_pt(salt_,temp_) #CT = gsw_CT_from_pt(SA,pt)
+    rho = gsw_d.sigma0(salt_,CT)
+
+    myvrnm=mydata[vrnm].values
     
-    mydata=mydata.rolling(time=12,center=True).mean()[6:-5]
-    
-    lonR,latR=mydata.lon.values,mydata.lat.values
-    lonR_m,latR_m=np.meshgrid(lonR,latR)
-    time=mydata.time.values
-    dta_nm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+' regression (imf'+f'{ModeN:02d}'+')\n'+\
+    time,depthR,latR=mydata.time.values,mydata.depth.values,mydata.lat.values
+    dta_nm=i.split('/')[-1][2:-3].split('_')[0]+' '+vrnm+' regression (imf'+f'{ModeN:02d}'+')\n'+\
         str(lon_rng[0])+'~'+str(lon_rng[-1])+'E '+str(time[0])[:4]+' '+str(time[-1])[:4]
-    dta_snm=i.split('/')[-1][2:-3].split('_')[0]+' '+varnm+' regression imf'+f'{ModeN:02d}_'+\
+    dta_snm=i.split('/')[-1][2:-3].split('_')[0]+' '+vrnm+' regression imf'+f'{ModeN:02d}_'+\
         str(lat_rng[0])+'S'+str(lat_rng[-1])+'S'+' '+str(lon_rng[0])+'E'+str(lon_rng[-1])+'E_'+\
             str(time[0])[:4]+' '+str(time[-1])[:4]
-    
-    dta_snm=dta_snm.replace(' ','_').replace('salt','salinity').replace('-','')
+    dta_snm=wpth+dta_snm.replace(' ','_').replace('salt','salinity').replace('-','')
     dta_nm=dta_nm.replace('salt','salinity').replace('-','')
-    print(dta_snm)
-    print(dta_nm)
-    
     ### SST Coef =============================================================
     print('!!! linregress !!!')
     # plt.figure()
     # plt.scatter(range(300),mydata[:,30,20])
     # plt.show()
     # raise
-    slope,intercept,r_value,p_value,std_err,smask=myRegress3d_sttcs(Esig9317,mydata,threshold=0.01)
+    slope,intercept,r_value,p_value,std_err,smask=myRegress3d_sttcs(Esig9317,myvrnm,threshold=0.05)
     # CoefD=slope*10**10 # Decadal^-1
-    CoefD=slope*10**9/2 # Decadal^-1
-    
-    smask[CoefD==0]=np.nan
+    CoefD=slope*10**10 # Decadal^-1
+
     ### Figure configs =======================================================
     # myCoefs.append(CoefD); myNm.append(dta_nm); myLat.append(latR)
     # raise
     
     myN=16
-    mylim=[-.3,.3]
+    mylim=[-1.,1.]
     CMAP,mylevel=myClrbr('myblc2',mylim,myN)
     CMAP_salt,mylevel_salt=myClrbr('salt',mylim,myN)
     CMAP_temp,mylevel_temp=myClrbr('balance',mylim,myN)
 
+    latR_m,depthR_m=np.meshgrid(latR,depthR)
+
     CoefD[CoefD<mylim[0]]=mylim[0]
     CoefD[CoefD>mylim[-1]]=mylim[-1]
-    
     mySetting={
         'figsize': '',
         'mylabel': '',
-        'Label_size':18,
+        'Label_size':12,
         'title_loc':'right',
         'fontParams':'Arial',
         'wpth':wpth}
-    
-    lat_rng_,lon_rng_=[-60,-53],[200,250]
-
     F=figmaster(mySetting)
-    print(dta_snm)
-    F.myCrtpy_sph3_box(latR_m,lonR_m,CoefD,smask,CMAP,mylevel,dta_nm,dta_snm,lat_rng_,lon_rng_)
-
     
-
-
-
-
-
+    # F.Vertical_data_drift01(latR_m,-depthR_m,CoefD,CMAP_salt,mylevel_salt,dta_nm,dta_snm)
+    F.Vertical_data_drift05(latR_m,-depthR_m,CoefD,rho,  mydepth,CMAP_salt,mylevel_salt,mylevels2,dta_nm,dta_snm)
+    # raise

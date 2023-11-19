@@ -42,11 +42,10 @@ tmp_sv_nm=tmp_sv_nm.replace('-','')
 wpth_re=wpth+varnm+'_'+str(t_rng[0])+'_'+str(t_rng[-1])+'_'+tmp_sv_nm+'/'
 try :
     os.mkdir(wpth_re)
-    loc=sys._getframe().f_code.co_filename
-    myInfo(loc,wpth_re)
 except:
-    raise
-
+    pass
+loc=sys._getframe().f_code.co_filename
+myInfo(loc,wpth_re)
 # myRnly=[pthrn+i for i in os.lis    tdir(pthrn) if i.endswith('.nc')]
 myMdls=[pthmd+i for i in os.listdir(pthmd) if i.endswith('.nc')]
 myObsv=[pthob+i for i in os.listdir(pthob) if i.endswith('.nc')]

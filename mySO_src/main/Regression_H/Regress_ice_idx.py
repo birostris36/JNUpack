@@ -18,7 +18,6 @@ mpl.use('agg')
 ### ======================================================================
 npth='J:/Reanalysis/myOISST_198001_202212_sst.nc'
 
-
 myindx='SAM'
 varnm='ice'
 

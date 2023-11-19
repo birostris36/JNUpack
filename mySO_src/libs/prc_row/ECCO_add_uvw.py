@@ -3,8 +3,8 @@ import numpy as np
 import datetime as dt
 import xarray as xr
 import os
-ECCO_npth='/data4/tmp/myECCO_199201_201712_ts.nc'
-ECCO_vel_pth='/data4/tmp/VEL/'
+ECCO_npth='/home/shjo/_data/tmp_proc/Models/myECCO_199201_201712_tsuvw.nc'
+ECCO_vel_pth='/home/shjo/_data/ECCO/VEL/'
 
 wnpth='./myECCO_199201_201712_tsuvw.nc'
 

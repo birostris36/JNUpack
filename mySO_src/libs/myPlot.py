@@ -64,7 +64,14 @@ def recall_myCMAP(Cname):
         Mycmap = colormaps.broc
     elif Cname=='balance':
         Mycmap = colormaps.vik
-        
+    elif Cname=='ryb':
+        Mycmap=plt.get_cmap('RdYlBu_r')
+    elif Cname=='b2r':
+        Mycmap=colormaps.cmp_b2r
+    elif Cname=='div5':
+        Mycmap=colormaps.div5_asym_Ob
+    elif Cname=='roma':
+        Mycmap=colormaps.roma
     else: 
         pass
     return Mycmap
@@ -467,6 +474,49 @@ class figmaster:
             plt.savefig(snm,bbox_inches='tight')
         plt.show()
         
+        
+        
+    def Vertical_data_drift03(self,latR_m,depthR_m,dataR,mydepth,CMAP,myLevels,dt_nm,snm):
+        Label_size=self.Label_size
+        xtick_location = np.around(np.linspace(latR_m[0,0], latR_m[-1,-1],5))
+        xtick_location = np.around(np.arange(latR_m[0,0]-1,latR_m[-1,-1]+1,5)+0.75)
+        xtick_labels = [f'{-ii:2.0f}S' for ii in xtick_location]
+        # xtick_labels = [str(-ii)+'S' for ii in xtick_location]
+        ytick_location= mydepth
+        ytick_labels  = [f'{-ii:2.0f}m' for ii in ytick_location]
+        # Figures
+        fig, axs = plt.subplots(1,1,figsize=(6,4),
+                                sharex=True,gridspec_kw={'height_ratios': [1],'wspace':0, 'hspace':0.05},dpi=200)
+        # im1=axs.pcolor(latR_m,depthR_m,dataR,cmap=CMAP,vmin=data_lim[0],vmax=data_lim[-1])
+        axs.set_title(dt_nm,loc='right',fontdict={'fontsize':Label_size+4,'fontweight':'regular'})
+        axs.axvline(x=-60,ls='--',color='k')
+        axs.axvline(x=-50,ls='--',color='k')
+        
+        im1=axs.contourf(latR_m,depthR_m,dataR,cmap=CMAP,levels=myLevels)
+        # axs.clabel(im1, inline=1, fontsize=14)
+        axs.tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
+        axs.tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size, color='k',right=True)
+        # axs.set_ylim(-NC['Tcline'].values[0],0) 
+        # plt.grid(color='grey', linestyle='-.', linewidth=1,axis='y',alpha=.7)
+        axs.set_xlim(latR_m[0,0],latR_m[-1,-1])
+        im0=axs.contour(latR_m,depthR_m,dataR,\
+            colors='k',levels=myLevels,linestyle='-')
+        axs.clabel(im0, inline=1, fontsize=10)
+        axs.set_xticks(ticks=xtick_location)
+        axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1.)
+        axs.set_yticks(ticks=ytick_location)
+        axs.set_yticklabels(ytick_labels, rotation=0, fontsize=Label_size, alpha=1.)
+        axs.set_facecolor(color='#dddddd')
+        divider = make_axes_locatable(axs)
+        cax = divider.append_axes("bottom", size="7%", pad=.35)
+        cax.tick_params(labelsize=Label_size)
+        cax.set_ylabel('',{'fontsize':Label_size,'fontweight':'bold','style':'italic'})
+        h = fig.colorbar(im1, ax=axs,label='',cax=cax,orientation="horizontal",extend='both',aspect=50)
+        if 1:
+            # plt.savefig('',facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+            plt.savefig(snm,bbox_inches='tight')
+        plt.show()
+        
     def Vertical_data_drift02(self,latR_m,depthR_m,dataR,mydata_tm,CMAP,myLevels,dt_nm,snm):
         Label_size=self.Label_size
         xtick_location = np.around(np.linspace(latR_m[0,0], latR_m[-1,-1],5))
@@ -507,7 +557,51 @@ class figmaster:
             # plt.savefig('',facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
             plt.savefig(snm,bbox_inches='tight')
         plt.show()
+    
+    def Vertical_data_drift05(self,latR_m,depthR_m,dataR,myrho,mydepth,CMAP,myLevels1,myLevels2,dt_nm,snm):
+        Label_size=12
+        xtick_location = np.around(np.linspace(latR_m[0,0], latR_m[-1,-1],5))
+        xtick_location = np.around(np.arange(latR_m[0,0]-1,latR_m[-1,-1]+1,5)+0.75)
+        xtick_labels = [f'{-ii:2.0f}S' for ii in xtick_location]
+        # xtick_labels = [str(-ii)+'S' for ii in xtick_location]
+        ytick_location= mydepth
+        ytick_labels  = [f'{-ii:2.0f}m' for ii in ytick_location]
+        # Figures
+        fig, axs = plt.subplots(1,1,figsize=(6,4),
+                                sharex=True,gridspec_kw={'height_ratios': [1],'wspace':0, 'hspace':0.05},dpi=200)
+        # im1=axs.pcolor(latR_m,depthR_m,dataR,cmap=CMAP,vmin=data_lim[0],vmax=data_lim[-1])
+        axs.set_title(dt_nm,loc='right',fontdict={'fontsize':Label_size+4,'fontweight':'regular'})
+        axs.axvline(x=-60,ls='--',color='k')
+        axs.axvline(x=-50,ls='--',color='k')
         
+        im1=axs.contourf(latR_m,depthR_m,dataR,cmap=CMAP,levels=myLevels1)
+        # axs.clabel(im1, inline=1, fontsize=14)
+        axs.tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
+        axs.tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size, color='k',right=True)
+        # axs.set_ylim(-NC['Tcline'].values[0],0) 
+        # plt.grid(color='grey', linestyle='-.', linewidth=1,axis='y',alpha=.7)
+        axs.set_xlim(latR_m[0,0],latR_m[-1,-1])
+        # im0=axs.contour(latR_m,depthR_m,myrho,\
+        #     colors='k',linestyle='-')
+        im0=axs.contour(latR_m,depthR_m,myrho,\
+            colors='k',linestyle='-',levels=myLevels2)
+        axs.clabel(im0, inline=1, fontsize=10)
+        axs.set_xticks(ticks=xtick_location)
+        axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1.)
+        axs.set_yticks(ticks=ytick_location)
+        axs.set_yticklabels(ytick_labels, rotation=0, fontsize=Label_size, alpha=1.)
+        axs.set_facecolor(color='#dddddd')
+        divider = make_axes_locatable(axs)
+        cax = divider.append_axes("bottom", size="7%", pad=.35)
+        cax.tick_params(labelsize=Label_size)
+        cax.set_ylabel('',{'fontsize':Label_size,'fontweight':'bold','style':'italic'})
+        h = fig.colorbar(im1, ax=axs,label='',cax=cax,orientation="horizontal",extend='both',aspect=50,format='%1.2f')
+        if 1:
+            # plt.savefig('',facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+            plt.savefig(snm,bbox_inches='tight')
+        plt.show()
+        
+    
     def Vertical_data_drift_sttc(self,latR_m,depthR_m,dataR,HATCH,CMAP,myLevels,dt_nm,snm):
         mpl.rcParams['hatch.linewidth'] = 0.1  # previous pdf hatch linewidth
         Label_size=self.Label_size
