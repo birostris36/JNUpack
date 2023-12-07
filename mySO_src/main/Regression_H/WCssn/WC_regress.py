@@ -21,13 +21,13 @@ mpl.use('agg')
 pthMO='J:/tmp_proc/Models/'
 pthrn='J:/tmp_proc/Obs/'
 
-varnm='temp'
+varnm='salt'
 myindx='SAM'
 
 t_rng=['1993-01', '2017-12']
-lat_rng=[-80,-30]; lon_rng=[0,360]
+lat_rng=[-80,-50]; lon_rng=[0,360]
 
-wpth='C:/Users/shjo/OneDrive/mySO/Regression_H/tmp/'+myindx+'/'
+wpth='C:/Users/shjo/OneDrive/mySO/Regression_H/tmp2/'+myindx+'/'
 mySig_npth='C:/Users/shjo/OneDrive/mySO/mySignals/my'+myindx+'.pkl'
 
 ### Preparation ============================================================
@@ -117,10 +117,13 @@ for i in myDATA:
     smask_Cld[slope_Cld==0]=np.nan
     
     # Figure
-    myN=16
-    mylim=[-.2,.2]
+    myN=21
+    mylim=[-.02,.02]
     CMAP,mylevel=myClrbr('myblc2',mylim,myN)
     CMAP_salt,mylevel_salt=myClrbr('salt',mylim,myN)
+    
+    # mylevels=np.arange(mylim[0],mylim[-1]+0.02/2,0.001)
+    
     CMAP_temp,mylevel_temp=myClrbr('balance',mylim,myN)
 
     slope_Wrm[slope_Wrm<mylim[0]]=mylim[0]
@@ -140,8 +143,12 @@ for i in myDATA:
     lat_rng_,lon_rng_=[-60,-53],[200,250]
 
     F=figmaster(mySetting)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Wrm,smask_Wrm,CMAP,mylevel,dta_nm.replace('QQQ','Wrm '),\
-        'Wrm_'+dta_snm,lat_rng_,lon_rng_)
-    F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Cld,smask_Cld,CMAP,mylevel,dta_nm.replace('QQQ','Cld '),\
-        'Cld_'+dta_snm,lat_rng_,lon_rng_)
+    # F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Wrm,smask_Wrm,CMAP,mylevel,dta_nm.replace('QQQ','Wrm '),\
+    #     'Wrm_'+dta_snm,lat_rng_,lon_rng_)
+    # F.myCrtpy_sph4_box(latR_m,lonR_m,slope_Cld,smask_Cld,CMAP,mylevel,dta_nm.replace('QQQ','Cld '),\
+    #     'Cld_'+dta_snm,lat_rng_,lon_rng_)
 
+    F.myCrtpy_sph4(latR_m,lonR_m,slope_Wrm,smask_Wrm,CMAP_salt,mylevel,dta_nm.replace('QQQ','Wrm '),\
+        'Wrm_'+dta_snm)
+    F.myCrtpy_sph4(latR_m,lonR_m,slope_Cld,smask_Cld,CMAP_salt,mylevel,dta_nm.replace('QQQ','Cld '),\
+        'Cld_'+dta_snm)

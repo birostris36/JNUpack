@@ -26,7 +26,7 @@ SFpath='J:/ACCfront/CTOH_SubantarcticFront_weekly_1993_2021.nc'
 
 wpth='C:/Users/shjo/OneDrive/mySO/Fronts/'
 
-lon_rng=[180,200]
+lon_rng=[0,360]
 
 ModeN=5
 myEEMD_pth='C:/Users/shjo/OneDrive/mySO/EEMD_sigs/OHC700_1993_2020_200E250E_60S53S/Figs/'
