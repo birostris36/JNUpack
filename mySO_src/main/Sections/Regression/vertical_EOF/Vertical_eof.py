@@ -29,7 +29,7 @@ wpth='C:/Users/shjo/OneDrive/mySO/Sections/Vertical_EOFS/'
 vrnm='temp'
 t_rng=['1993-01', '2017-12']
 d_rng=[0,2000]
-lat_rng=[-65,-43]; lon_rng=[230,250]
+lat_rng=[-65,-43]; lon_rng=[200,220]
 
 tmp_sv_nm=''
 ### Preparation ============================================================

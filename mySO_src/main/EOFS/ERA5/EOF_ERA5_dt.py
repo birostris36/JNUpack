@@ -13,7 +13,7 @@ from eofs.xarray import Eof
 import numpy as np
 import xarray as xr
 import pickle
-from myTrend import myfitting2d_sttcs,myfitting1d_sttcs
+from myTrend import myfitting2d_sttcs,myfitting1d_sttcs,myXfitting2d
 from myPlot import  figmaster,myClrbr, dta_colr
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata 
@@ -27,7 +27,7 @@ pthMO='D:/ERA5_monthly_85/'
 wpth='C:/Users/shjo/OneDrive/mySO/EOFS/ERA5/'
 
 t_rng=[1993, 2017]
-varnm='Vwind'
+varnm='sst'
 fig_bool=1
 
 myName='Zonal mean '+varnm+' trend'
@@ -60,19 +60,20 @@ lat_rng=[-80,-30]; lon_rng=[0,360]; time_rng=[str(t_rng[0])+'-01',str(t_rng[-1])
 
  
 print('!!! Open: '+myDATA_list[0]+' !!!')
-tmp=xr.open_dataset('D:/ERA5_monthly_85/ERA5_monthly_wind_1980_2021.nc')
+tmp=xr.open_dataset('D:/ERA5_monthly_85/ERA5_monthly_sst_1980_2021.nc')
 
 myDATA = tmp[varnm].loc[dict(lat=slice(lat_rng[0],lat_rng[-1]),lon=slice(lon_rng[0],lon_rng[-1]),\
-    wind_time=slice(time_rng[0],time_rng[-1]))]
+    sst_time=slice(time_rng[0],time_rng[-1]))]
 
 myDATA=myDATA.where(myDATA<10**30)
 
-time,latR,lonR=myDATA.wind_time.values,myDATA.lat.values,myDATA.lon.values
+time,latR,lonR=myDATA.sst_time.values,myDATA.lat.values,myDATA.lon.values
 dta_nm='ERA5 '+varnm+' eof '+\
     str(time[0])[:4]+' '+str(time[-1])[:4]
 
-OHC_1Y=myDATA.rolling(wind_time=12,center=True).mean()[6:-5]
-# OHC_1Y=myDATA
+OHC_1Y=myDATA
+# OHC_1Y=myDATA.rolling(sst_time=12,center=True).mean()[6:-5]
+OHC_1Y,_=myXfitting2d(OHC_1Y,'sst_time')
 ### EOFs ==================================================================
 NN=10
 
@@ -176,8 +177,8 @@ for nm,lat_,lon_,eofs_,pcs_,var1_,var2_ in zip(myNm,myLat,myLon,myEofs,myPcs,myV
         # print('min!!! : ',np.nanmin(eof))
         # raise
         
-        TIME= [str(i)[0:7] for i in pcs_.wind_time.values]
-        TIME2=[str(i)[2:4] for i in pcs_.wind_time.values]
+        TIME= [str(i)[0:7] for i in pcs_.sst_time.values]
+        TIME2=[str(i)[2:4] for i in pcs_.sst_time.values]
 
         lonM,latM=np.meshgrid(lon_,lat_)
         

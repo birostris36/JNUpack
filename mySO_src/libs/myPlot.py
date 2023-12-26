@@ -443,7 +443,7 @@ class figmaster:
         M=plt.pcolormesh(LON,LAT,DATA,cmap=CMAP,transform=PC,zorder=0,vmin=LEVELS[0],vmax=LEVELS[-1],shading='gouraud')
         
         ax.set_extent([LON[0][0], LON[0][-1], LAT[0][0], LAT[-1][0]], crs=PC)
-        
+
         ax.tick_params(axis='both', which='major', labelsize=28)
 
         divider = make_axes_locatable(ax)
@@ -460,6 +460,60 @@ class figmaster:
             plt.savefig(self.wpth+'/'+myName.replace(' ','_'))
         plt.show()
 
+
+
+    def myCrtpy_sph4_X(self,LAT,LON,DATA,CMAP,LEVELS,tnm,myName,lat_rng,lon_rng):
+        
+        a,b=[lon_rng[0], lon_rng[0]],[lat_rng[0],lat_rng[-1]]
+        c,d=[lon_rng[-1], lon_rng[-1]],[lat_rng[0],lat_rng[-1]]
+        e,f=[lon_rng[0], lon_rng[-1]],[lat_rng[0],lat_rng[0]]
+        g,h=[lon_rng[0], lon_rng[-1]],[lat_rng[-1],lat_rng[-1]]
+        
+        Spheric=ccrs.SouthPolarStereo(central_longitude=0.0,globe=None)
+        PC = ccrs.PlateCarree(central_longitude=0.0,globe=None)
+        fig, ax = plt.subplots(1, 1, figsize=(12.5,11),
+                        subplot_kw={'projection': Spheric})
+        theta = np.linspace(0, 2*np.pi, 100)
+        center, radius = [0.5, 0.5], 0.5
+        verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+        circle = mpath.Path(verts * radius + center)
+        ax.set_boundary(circle, transform=ax.transAxes)
+        ax.add_feature(cf.COASTLINE.with_scale("110m"), lw=1,zorder=110)
+        ax.add_feature(cartopy.feature.LAND,color=[.75,.75,.75],zorder=100)
+        ax.set_title(tnm,loc='right',fontdict={'fontsize':32,'fontweight':'regular'})
+
+        gl = ax.gridlines(crs=PC, draw_labels=True,y_inline=False,x_inline=False,
+                        linewidth=.6, color='k', alpha=0.45, linestyle='-.')
+        gl.rotate_labels=False
+        gl.xlabels_top,gl.ylabels_right = True,True
+        gl.xlabel_style = gl.ylabel_style = {"size" : 26}
+        
+        ax.plot(a,b,transform=PC,color='k',linestyle='--',linewidth=2.5,zorder=200)
+        ax.plot(c,d,transform=PC,color='k',linestyle='--',linewidth=2.5,zorder=200)
+        ax.plot(e,f,transform=PC,color='k',linestyle='--',linewidth=2.5,zorder=200)
+        ax.plot(g,h,transform=PC,color='k',linestyle='--',linewidth=2.5,zorder=200)
+        
+        # plt.contourf(LON,LAT,HATCH,levels=LEVELS,colors='none',hatches='.',transform=PC,zorder=2)
+        M=plt.pcolormesh(LON,LAT,DATA,cmap=CMAP,transform=PC,zorder=0,vmin=LEVELS[0],vmax=LEVELS[-1],shading='gouraud')
+        
+        # ax.set_extent([LON[0][0], LON[0][-1], LAT[0][0], LAT[-1][0]], crs=PC)
+        ax.set_extent([180, 250, -80, -40], crs=PC)
+
+        ax.tick_params(axis='both', which='major', labelsize=28)
+
+        divider = make_axes_locatable(ax)
+        ax_cb = divider.new_horizontal(size="5%", pad=1., axes_class=plt.Axes)
+        fig.add_axes(ax_cb)
+        cb=plt.colorbar(M,extend='both',pad=0.08,cax=ax_cb)
+        cb.set_label(label='', weight='regular',fontsize=28)
+        cb.ax.tick_params(labelsize=19)
+        plt.tight_layout()
+        if 1:
+            myName.replace(' ','_')
+            # plt.savefig(w_path+'/ppt/'+save_name,
+            #         facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
+            plt.savefig(self.wpth+'/'+myName.replace(' ','_'))
+        plt.show()
     
     def myCrtpy_sph4(self,LAT,LON,DATA,HATCH,CMAP,LEVELS,tnm,myName):
         

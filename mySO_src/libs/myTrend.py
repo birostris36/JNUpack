@@ -18,19 +18,36 @@ def myfitting(x,y,deg=1):
     print('!!! y_est=ax+b !!!')
     return [a,b],y_err
 
-def myXfitting2d(Xdata):
+def myXfitting2d(Xdata,time):
     '''
     --> 3D xarray.dataarray (myDATA series)
+    --> time --> Name of time (str)
     '''
-    NC=Xdata.assign_coords({'TT':('time',range(len(Xdata.time)))})
-    NC=NC.swap_dims({"time":"TT"})
+    NC=Xdata.assign_coords({'TT':(time,range(len(Xdata[time])))})
+    NC=NC.swap_dims({time:"TT"})
     NC_s=NC.polyfit(dim='TT',deg=1,skipna=False)
     fit = xr.polyval(NC.TT, NC_s.polyfit_coefficients)
     Coef=NC_s.polyfit_coefficients[0]
     Coef_var=Coef.values*12 # (m/year)
     data_dt=NC-fit
-    data_dt=data_dt.swap_dims({"TT":"time"})
+    data_dt=data_dt.swap_dims({"TT":time})
+    data_dt=data_dt.drop_vars('TT')
     return data_dt, Coef
+
+
+def myXRegress(Xdata,myIdx):
+    '''
+    --> 3D xarray.dataarray (myDATA series)
+    --> time --> Name of time (str)
+    '''
+    NC=Xdata.assign_coords({'myIdx':('time',myIdx)})
+    NC=NC.swap_dims({'time':"myIdx"})
+    NC_s=NC.polyfit(dim='myIdx',deg=1,skipna=False)
+    fit = xr.polyval(NC.myIdx, NC_s.polyfit_coefficients)
+    Coef=NC_s.polyfit_coefficients[0]
+    return Coef
+
+
 
 def myfitting2d(data3d):
     '''

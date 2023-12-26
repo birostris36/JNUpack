@@ -6,6 +6,8 @@ from myPlot import  figmaster,myClrbr
 from myTools import myInfo
 import matplotlib.path as mpath
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import gsw.density as gsw_d
+import gsw.conversions as gsw_c
 import os
 import cartopy
 import cartopy.crs as ccrs
@@ -25,12 +27,12 @@ warnings.filterwarnings('ignore')
 pthmd='J:/tmp_proc/Models/'
 pthob='J:/tmp_proc/Obs/'
 
-wpth='C:/Users/shjo/OneDrive/mySO/Trend/'
+wpth='C:/Users/shjo/OneDrive/mySO/Cld_island/Vertical_var_trend/'
 
-lat_rng=[-70,-40]; lon_rng=[200,220]; depth_rng=[0,2000]
+lat_rng=[-70,-30]; lon_rng=[200,220]; depth_rng=[0,2000]
 
 t_rng=[1993, 2017]
-varnm='salt'
+varnm='temp'
 fig_bool=1
 
 ### Preparation ============================================================
@@ -61,7 +63,7 @@ if t_rng[0]<1992:
 plt.rcParams["font.family"] = 'Arial'
 
 myN=20
-mylim=[-.02,.02]
+mylim=[-.2,.2]
 mydepth=[-250, -500, -1000, -1500,-2000]
 # mydepth=[-250, -500, -800]
 
@@ -119,7 +121,7 @@ def Vertical_data_drift03_(latR_m,depthR_m,dataR,mydepth,CMAP,myLevels1,myLevels
     plt.show()
     
 
-def Vertical_data_drift03_hat(latR_m,depthR_m,dataR,Hatch,mydepth,CMAP,myLevels1,myLevels2,dt_nm,snm):
+def Vertical_data_drift03_hat(latR_m,depthR_m,dataR,myrho,Hatch,mydepth,CMAP,myLevels1,myLevels2,dt_nm,snm):
     Label_size=12
     xtick_location = np.around(np.linspace(latR_m[0,0], latR_m[-1,-1],5))
     xtick_location = np.around(np.arange(latR_m[0,0]-1,latR_m[-1,-1]+1,5)+0.75)
@@ -134,17 +136,18 @@ def Vertical_data_drift03_hat(latR_m,depthR_m,dataR,Hatch,mydepth,CMAP,myLevels1
     axs.set_title(dt_nm,loc='right',fontdict={'fontsize':Label_size+4,'fontweight':'regular'})
     axs.axvline(x=-60,ls='--',color='k')
     axs.axvline(x=-50,ls='--',color='k')
-    plt.contourf(latR_m,depthR_m,Hatch,levels=myLevels1,colors='none',hatches='/',zorder=2,extend='both')
-    im1=axs.contourf(latR_m,depthR_m,dataR,cmap=CMAP,levels=myLevels1)
     # axs.clabel(im1, inline=1, fontsize=14)
     axs.tick_params(axis='x', direction='in', length=4.5, pad=8, labelsize=Label_size, labelcolor='k', top=True)
     axs.tick_params(axis='y', direction='in', length=4.5, pad=8, labelsize=Label_size, color='k',right=True)
     # axs.set_ylim(-NC['Tcline'].values[0],0) 
     # plt.grid(color='grey', linestyle='-.', linewidth=1,axis='y',alpha=.7)
     axs.set_xlim(latR_m[0,0],latR_m[-1,-1])
-    im0=axs.contour(latR_m,depthR_m,dataR,\
-        colors='k',levels=myLevels2,linestyle='-')
-    axs.clabel(im0, inline=1, fontsize=10)
+    im1=axs.contour(latR_m,depthR_m,myrho,\
+        colors='k',linestyle='-')
+    axs.clabel(im1, inline=1, fontsize=10)
+    plt.contourf(latR_m,depthR_m,Hatch,levels=myLevels1,colors='none',hatches='/',zorder=2,extend='both')
+    im1=axs.contourf(latR_m,depthR_m,dataR,cmap=CMAP,levels=myLevels1)
+    
     axs.set_xticks(ticks=xtick_location)
     axs.set_xticklabels(xtick_labels, rotation=0, fontsize=Label_size, alpha=1.)
     axs.set_yticks(ticks=ytick_location)
@@ -159,17 +162,28 @@ def Vertical_data_drift03_hat(latR_m,depthR_m,dataR,Hatch,mydepth,CMAP,myLevels1
         # plt.savefig('',facecolor='none',edgecolor='none',bbox_inches='tight',transparent=True)
         plt.savefig(snm,bbox_inches='tight')
     plt.show()
+    
+
 
 for i in myDATA: 
     print('!!! Open: '+i+' !!!')
     tmp=xr.open_dataset(i)
 
-    mydata = tmp[varnm].loc[dict(lat=slice(lat_rng[0],lat_rng[-1]),lon=slice(lon_rng[0],lon_rng[-1]),\
+    mydata = tmp.loc[dict(lat=slice(lat_rng[0],lat_rng[-1]),lon=slice(lon_rng[0],lon_rng[-1]),\
         time=slice(time_rng[0],time_rng[-1]),depth=slice(depth_rng[0],depth_rng[-1]))]
     mydata=mydata.where(mydata<10**10)
     mydata=mydata.where(mydata>-10**10)
     
-    mydata=mydata.mean(dim=['lon'],skipna=True)
+    
+    ### Calc density ================================
+    mydata_=mydata.mean(dim=['time','lon'])
+    temp_,salt_=mydata_['temp'],mydata_['salt']
+    CT=gsw_c.CT_from_pt(salt_,temp_) #CT = gsw_CT_from_pt(SA,pt)
+    # rho = gsw_d.rho(salt_,CT,depthR)
+    rho = gsw_d.sigma0(salt_,CT)
+    ### =============================================
+    
+    mydata=mydata[varnm].mean(dim=['lon'],skipna=True)
 
     latR,depthR=mydata.lat.values,mydata.depth.values
     dta_nm=i.split('/')[-1][2:-3].split('_')[0]+\
@@ -187,11 +201,10 @@ for i in myDATA:
     
     CMAP_temp,mylevel=myClrbr('b2r',mylim,myN)
     CMAP_salt,mylevel=myClrbr('salt',mylim,myN)
-
     
     smask[smask!=smask]=1
     smask[smask==0]=np.nan
     smask[smask==1]=0
 
     
-    Vertical_data_drift03_hat(latR_m,-depthR_m,CoefD,smask,mydepth,CMAP_salt,mylevel,mylevels2,dta_nm,dta_snm)
+    Vertical_data_drift03_hat(latR_m,-depthR_m,CoefD,rho,smask,mydepth,CMAP_temp,mylevel,mylevels2,dta_nm,dta_snm)

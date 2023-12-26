@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:/Users/shjo/Bridge/JNUpack/SO/libs/')
+sys.path.append('C:/Users/shjo/Bridge/JNUpack/mySO_src/libs/')
 import matplotlib as mpl
 mpl.use('agg')
 import os
@@ -13,7 +13,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 varnm = 'OHC700'
-t_rng=['1993-01','2017-12']
+t_rng=['2005-01','2020-12']
 
 # pthrn='J:/Reanalysis/'
 pthmd='J:/tmp_proc/Models/'
